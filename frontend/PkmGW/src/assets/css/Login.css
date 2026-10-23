@@ -1,0 +1,37 @@
+.main-page{
+    background-color: #DBD3E3;
+    text-align: center;
+    width: 30rem;
+    height: 20rem;
+    border-radius: 0.25rem;
+}
+
+.outer-login{
+    display:flex;
+    flex-direction: column;
+    margin: 1rem;
+    padding: 1rem;
+}
+
+.inner-login{
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+    margin: 1rem;
+}
+
+.room-creation, .join-room{
+    width: 100%;
+    text-align: center;
+}
+
+.vertical-bar{
+    background-color: rgb(0, 0, 0);
+    width: 2px;
+    height: 10rem;
+    margin: 0.5rem;
+}
+
+.name-input{
+    width: 20rem;
+}
