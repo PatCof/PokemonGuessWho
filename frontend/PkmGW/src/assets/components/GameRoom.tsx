@@ -5,56 +5,93 @@ import AnswerModal from './AnswerModal';
 import SecretSelectionModal from './SecretSelectionModal';
 import axios from 'axios';
 import OutcomeModal from './OutcomeModal';
+import { useLocation, useParams } from "react-router";
+import { createSocket } from '../../socket';
 
-type Pokemon = {
+interface Pokemon {
     id : number,
     name : string,
     sprite : string
     types : string[]
 }
 
-interface Room {
-    player : "Player1" | "Player2",
-    turn : boolean,
+export interface Player {
+    playerId ?: string,
+    playerName ?: string,
+    turn ?: boolean
     secretPokemon ?: string
 }
 
-type Message = {
-    index : number,
-    activePlayer :  "Player1" | "Player2",
-    msg : string
+export interface Room {
+    roomId : string,
+    players ?: [Player, Player],
+    turn ?: boolean,
+    pokeList : Pokemon[]
 }
 
-function GameRoom(){
+interface Message {
+    roomId: string,
+    index : number,
+    activePlayer :  string,
+    msg : string
+}
+interface RoomId{roomId : string};
+const socket = createSocket();
+
+function GameRoom({roomId} : RoomId){
+    //const { roomIdValue } = roomId;
+    const location = useLocation();
+    const playerName = location.state?.playerName;
+    const currentRoom = location.state?.room;
+    const [room, setRoom] = useState<Room>(currentRoom);    
+
+    const [currentPlayer,setCurrentPlayer] = useState(currentRoom.currentPlayerId);
+    const [activePlayerId, setActivePlayerId] = useState<string>();
+
+    const [pokemon, setPokemon] = useState<Pokemon[]>(room.pokeList);
+
+
     type Action = "INITIAL" | "SELECTION" | "CHOICE" | "OPPONENT";
     const [action, setAction] = useState<Action>("INITIAL");
     const [isSecretSelectionOpen, setIsSecretSelectionOpen] = useState<boolean>(true);
     const [isAnswerModalOpen, setIsAnswerModalOpen] = useState<boolean>(false);
     const [isOutcomeModalOpen, setIsOutcomeModalOpen] = useState<boolean>(false);
     const [finalPkmn, setFinalPkmn] = useState<Pokemon>();
-    const [selectedPkmn, setSelectedPkmn] = useState<string>("");
     const [isDisabled, setIsDisabled] = useState(false);
     const [remaining, setRemaining] = useState<number>(24);
-    const [pokemon, setPokemon] = useState<Pokemon[]>([]);
-    const [room, setRoom] = useState<Room[]>([]);    
+
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState<string>("");
     const [msgCounter, setMsgCounter] = useState<number>(0);
-    const [activePlayer, setActivePlayer] = useState<string>("");
     const [winner, setWinner] = useState<string>("");
 
     const [toggledP1Cards, setToggledP1Cards] = useState<number[]>([]);
     const [toggledP2Cards, setToggledP2Cards] = useState<number[]>([]);
 
-
+    const selectButtonRef = useRef<HTMLButtonElement>(null);
+    const finalButtonRef = useRef<HTMLButtonElement>(null);
+    const endButtonRef = useRef<HTMLButtonElement>(null);
+    const yesButtonRef = useRef<HTMLButtonElement>(null);
+    const noButtonRef = useRef<HTMLButtonElement>(null);
 
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
 
-    const getPlayers = async()=>{
-        const response  = await axios.get('http://localhost:3000/getPlayers');
-        setRoom(response.data);
+    const disableButtons = () =>{
+        if(selectButtonRef.current) selectButtonRef.current.disabled = true;
+        if(finalButtonRef.current) finalButtonRef.current.disabled = true;
+        if(endButtonRef.current) endButtonRef.current.disabled = true;
+        if(yesButtonRef.current) yesButtonRef.current.disabled = true;
+        if(noButtonRef.current) noButtonRef.current.disabled = true;
     }
+
+    const enableButtons = () =>{
+        if(finalButtonRef.current) finalButtonRef.current.disabled = false;
+        if(endButtonRef.current) endButtonRef.current.disabled = false;
+        if(yesButtonRef.current) yesButtonRef.current.disabled = false;
+        if(noButtonRef.current) noButtonRef.current.disabled = false;
+    }
+
 
     const sendAnswer = async () =>{
         const response = await axios.post('http://localhost:3000/sendAnswer', {finalPkmn : finalPkmn, room: room});
@@ -68,51 +105,84 @@ function GameRoom(){
         const response = await axios.post('http://localhost:3000/endTurn', {room: room});
         console.log(response.data);
         setRoom(response.data);
-        response.data[0].turn === true ? setActivePlayer(room[0].player) : setActivePlayer(room[1].player);
+        //response.data[0].turn === true ? setActivePlayer(room!.players![0]) : setActivePlayer(room!.players![1]);
+        action === "SELECTION" ? setAction("OPPONENT") : setAction("SELECTION");
+
     }
 
-    const sendPokemonFunc = async(name : string, players : Room[]) =>{
-        const response = await axios.post('http://localhost:3000', {name : name, players: players});
+    const sendPokemonFunc = async(name : string, room : Room) =>{
+        const response = await axios.post('http://localhost:3000', {name : name, players: room});
         console.log(response.data);
         setRoom(response.data);
     }; 
 
-    const fetchPokemon = useCallback(async () =>{
-        try{
-            const response = await axios.get('http://localhost:3000/getRandomizedPokemon');
-            setPokemon(response.data);
-        }catch (error){
-            console.error("Error found! Data was not sent", error);
-        }
-    }, []);
+
+    // useEffect(()=>{
+    //     const pokeData = async () =>{
+    //         const pokemonList: Pokemon[] = await currentRoom.pokeList;
+    //         setPokemon(pokemonList);
+    //     }
+    //     pokeData();
+    // }, []);
+
+    useEffect(()=>{
+        console.log(pokemon);
+    })
+    
 
 
+    const generateMessage = (source: string) =>{
+            let activePlay : string = currentPlayer;
+            //room.players![0].turn === true ? activePlay = room.players![0].playerId!  : activePlay = room.players![1].playerId! ;
+            switch(source){
+                case "SEND":
+                    return {
+                         roomId: roomId,
+                         index : msgCounter,
+                         activePlayer : activePlay,
+                         msg : inputValue
+                    }
+                break;
+                case "YES":
+                    return {
+                        roomId: roomId,
+                        index : msgCounter,
+                        activePlayer : activePlay,
+                        msg : "Yes"
+                    }
 
-    const sendMessage = () =>{
-        if(inputValue !== ""){
-            let activePlay : "Player1" | "Player2" | ""  = "";
-            room[0].turn === true ? activePlay = "Player1"  : activePlay = "Player2" ;
-
-            let newMsg : Message = {
-                index : msgCounter,
-                activePlayer : activePlay,
-                msg : inputValue
+                case "NO":
+                    return {
+                        roomId: roomId,
+                        index : msgCounter,
+                        activePlayer : activePlay,
+                        msg : "No"
+                    }
+                
+                default:
+                    throw new Error(`Invalid message source: ${source}`);
             }
+    }
 
+    const sendMessage = (source: string) =>{
+        if((source === "SEND" && inputValue.trim() !== "") || source === "YES" || source === "NO"){
+            let newMsg = generateMessage(source);
             setMsgCounter(msgCounter => msgCounter + 1);        
             setInputValue("");
-            setMessages([...messages, newMsg]);
+            setMessages(messages => [...messages, newMsg]);
+
+            socket.emit('chat_message', newMsg);
         }
     }
 
 
     useEffect(() =>{
-        getPlayers();
+        disableButtons();
     }, []);
 
-    useEffect(()=>{
-        fetchPokemon();
-    },[fetchPokemon]);
+    // useEffect(()=>{
+    //     fetchPokemon();
+    // },[fetchPokemon]);
 
     useEffect(()=>{
         const textArea = textAreaRef.current;
@@ -122,45 +192,66 @@ function GameRoom(){
         }
     },[inputValue]);
 
-    function selectPokemon(index:number, action: Action, name: string, room: Room[], sprite: string, types: string[]){
+    useEffect(()=>{
+
+        socket.connect();
+
+        socket.emit("join_room",roomId);
+
+        socket.on("connect", () => {
+            console.log("Connected:", socket.id);
+        });
+
+        socket.on("receive_message", (data)=>{
+            console.log(data);
+            setMessages((prevMessages) => [...prevMessages, data]);
+        });
+
+        socket.on("connection_err", (err)=>{
+            console.error(err.message);
+        });
+        return () => {
+            socket.off("connect");
+            socket.off("receive_message");
+            socket.off("connection_err");
+            socket.disconnect();
+        
+        }
+    }, []);
+
+
+    function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
         switch (action){
         case "INITIAL":
-            if(room[0].secretPokemon !== undefined || room[1].secretPokemon !== undefined){
+            if(room!.players![0].secretPokemon !== undefined || room!.players![1].secretPokemon !== undefined){
                 setAction("SELECTION");
+                enableButtons();
             }
-            setSelectedPkmn(name);
-
+            console.log(room);
             sendPokemonFunc(name, room);
+
             break;
 
         case "SELECTION":
-            if(room[0].turn === true  && room[1].turn === false){
+            if(room.players![0].turn === true  && room.players![1].turn === false){
                 if(toggledP1Cards.find(item => item === index)){
                     setToggledP1Cards(toggledP1Cards.filter(i => i !== index));
                     setRemaining(remaining => remaining + 1);
                 }else{
                     setToggledP1Cards([...toggledP1Cards, index]);
                     setRemaining(remaining => remaining - 1);
-                                        console.log(name);
-
                 }   
             }    
         
-            else if(room[1].turn === true && room[0].turn === false){
+            else if(room.players![1].turn === true && room.players![0].turn === false){
                 if(toggledP2Cards.find(item => item === index)){
                     setToggledP2Cards(toggledP2Cards.filter(i => i !== index));
                     setRemaining(remaining => remaining + 1);
-                    console.log(name);
                 }else{
                     setToggledP2Cards([...toggledP2Cards, index]);
                     setRemaining(remaining => remaining - 1);
-                                    console.log(name);
-
                 }   
             }    
-
-
-
             break;
         
         case "CHOICE":
@@ -195,16 +286,16 @@ function GameRoom(){
                     <a>Leave Match</a>
                 </div>
             </div>
-            { room && room.length > 0  ?
-            <div className={room[0].turn === true ? "player1-div vs-div" : "player2-div vs-div" }>
-                <div className={room[0].turn === true ? "player1 left-glow" : "player1"}>
-                    <h1>{room[0].turn === true ? "Player 1's Turn" : "Player 1"}</h1>
+            { room?.players && room.players.length >= 2 ?
+            <div className={room.players![0].turn === true ? "player1-div vs-div" : "player2-div vs-div" }>
+                <div className={room.players![0].turn === true ? "player1 left-glow" : "player1"}>
+                    <h1>{room.players![0].turn === true ? "Player 1's Turn" : "Player 1"}</h1>
                 </div>
                 <div className="vs">
                     <h1>V.S.</h1>
                 </div>
-                <div className={room[0].turn === false ? "player2 right-glow" : "player2"}>
-                    <h1>{room[0].turn === false ? "Player 2's Turn" : "Player 2"}</h1>
+                <div className={room.players![0].turn === false ? "player2 right-glow" : "player2"}>
+                    <h1>{room.players![0].turn === false ? "Player 2's Turn" : "Player 2"}</h1>
                 </div>
             </div>
 
@@ -216,7 +307,8 @@ function GameRoom(){
                     <div className="info-div">
                         <div className="chosen-pkmn-div">
                             {/* <h2>Your Secret Pokemon: {room && room[] ? room[0].secretPokemon : room[1].secretPokemon} </h2> */}
-                         {room && room.length > 0 ? <h2 className="chosen-pkmn-text">Your Secret Pokemon: {room[0].turn === true ? room[0].secretPokemon : room[1].secretPokemon} </h2>
+                         {room?.players && room.players.length >= 2 ?
+                          <h2 className="chosen-pkmn-text">Your Secret Pokemon: {room.players![0].turn === true ? room.players![0].secretPokemon : room.players![1].secretPokemon} </h2>
                          : <div></div>}
                         <div className="remaining-pkmn-div">
                             <p>{remaining}/24</p>
@@ -228,9 +320,9 @@ function GameRoom(){
 
                     </div>  
                     <div className="buttons-div">
-                        <button onClick={()=>{setAction("SELECTION") ; setIsDisabled(false)}} disabled={!isDisabled}>Select/Deselect Pokemon</button>
-                        <button onClick={()=>{setAction("CHOICE") ; setIsDisabled(true)}} disabled={isDisabled}>Select Final Answer</button>
-                        <button onClick={()=>{endTurn()}}>End Turn 👁️🫦👁️</button>
+                        <button ref={selectButtonRef} onClick={()=>{setAction("SELECTION") ; setIsDisabled(false)}} disabled={!isDisabled}>Select/Deselect Pokemon</button>
+                        <button ref={finalButtonRef} onClick={()=>{setAction("CHOICE") ; setIsDisabled(true)}} disabled={isDisabled}>Select Final Answer</button>
+                        <button ref={endButtonRef} onClick={()=>{endTurn()}}>End Turn</button>
                     </div>
                     <div className="whitespace"></div>
                 </div>
@@ -241,16 +333,23 @@ function GameRoom(){
                     <div className="message-div">
                         {messages && messages.length > 0 ?
                             messages.map((m, index) => 
-                            <div className={ m.activePlayer === activePlayer ? "activePlayer msgs" : "otherPlayer msgs"} key={index}>
+                            <div className={ m.activePlayer === currentPlayer ? "activePlayer msgs" : "otherPlayer msgs"} key={index}>
                                 {m.msg}
                             </div>
                         )
                         : <div></div>}
                     </div>
-                    <div className="message-input">
-                        <textarea ref={textAreaRef} rows={1} cols={100} value={inputValue} onChange={(e) =>{setInputValue(e.target.value)}} placeholder='Enter Question'></textarea>
-                        <button onClick={()=> sendMessage()}>Send</button>
-                    </div>
+                    { action !== "OPPONENT" ?
+                        <div className="message-input">
+                            <textarea ref={textAreaRef} rows={1} cols={100} value={inputValue} onChange={(e) =>{setInputValue(e.target.value)}} placeholder='Enter Question'></textarea>
+                            <button onClick={()=> sendMessage("SEND")}>Send</button>
+                        </div>
+                        :
+                        <div className="answer-input">
+                            <button ref={yesButtonRef} onClick={()=>sendMessage("YES")}>YES</button>
+                            <button ref={noButtonRef} onClick={()=>sendMessage("NO")}>NO</button>
+                        </div>
+                    }
                 </div>
             </div>
         </div>    

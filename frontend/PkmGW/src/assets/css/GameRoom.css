@@ -60,16 +60,6 @@
 }
 
 
-
-
-/* .vs-p1-color{
-    background-color: #cc0000;
-}
-
-.vs-p2-color{
-    background-color: #4a76d0;
-} */
-
 .player2{
     border-radius: 0rem 1rem 1rem 0rem;
     background-color: #cc0000;
@@ -222,5 +212,5 @@ textarea{
 }
 
 .right-glow{
-    box-shadow: inset -3px -3px 2px rgb(255, 213, 0);
+    box-shadow: inset -3px 3px 2px rgb(255, 213, 0);
 }

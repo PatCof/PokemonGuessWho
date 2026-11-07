@@ -1,6 +1,6 @@
-import {Router} from "express";
-import {getRandomizedPokemon} from "../controllers/gameController.ts"
+// import {Router} from "express";
+// import {getRandomizedPokemon} from "../controllers/gameController.ts"
 
-export const randomizedRoute = Router();
+// export const randomizedRoute = Router();
 
-randomizedRoute.get("/getRandomizedPokemon", getRandomizedPokemon);
+// randomizedRoute.get("/getRandomizedPokemon", getRandomizedPokemon);

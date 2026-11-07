@@ -1,11 +1,9 @@
 import axios from "axios";
 
-// export let secretPokemon : string = "";
-// export interface Player{
-//     roomId ?: number,
-//     name ?: string,
-//     secretPokemon : string;
-// };
+export let roomMap : Map<string, Room> = new Map();
+export let playerSet : Set<string> = new Set();
+export let randomizedPokemonRoom : Map<string, Pokemon[]> = new Map();
+
 
 export type Pokemon = {
     id : number,
@@ -14,75 +12,158 @@ export type Pokemon = {
     types : string[]
 }
 
-
-export interface Room {
-    player : "Player1" | "Player2",
-    turn : boolean,
+export interface Player {
+    playerId ?: string,
+    playerName ?: string,
+    turn : boolean
     secretPokemon ?: string
 }
 
-export let players : Room[];
-
-
-export function setGame(){
-    const player1 : Room = {player : "Player1", turn: true};
-    const player2 : Room = {player : "Player2", turn: false};
-    players = [player1, player2];
-    return players;
+export interface Room {
+    roomId : string,
+    players ?: [Player, Player],
+    currentPlayerId ?: string,
+    pokeList ?: Pokemon[]
 }
 
-export function endGameCondition(finalPkmn : Pokemon, players : Room[]){
-    if(players[0].turn === true && players[1].turn === false && players[0].secretPokemon && players[1].secretPokemon){
-        if(players[1].secretPokemon === finalPkmn.name){
-            return "Player 1 Wins";
+
+export function setRoomId(){
+    const createdId = createId();
+    while(roomMap.has(createdId)){
+        const createdId = createId();
+        if(!roomMap.has(createdId)){
+            let room = {
+                roomId : createdId,
+            }
+            roomMap.set(createdId, room);
+            break;
         }
-        return "Player 2 Wins"
-    }else if(players[0].turn === false && players[1].turn === true && players[0].secretPokemon && players[1].secretPokemon){
-        if(players[0].secretPokemon === finalPkmn.name){
-            return "Player 2 Wins";
+    }
+    return createdId;
+}
+
+export function setPlayerId(){
+    const createdId = createId();
+    while(playerSet.has(createdId)){
+        const createdId = createId();
+        if(!playerSet.has(createdId)){
+            playerSet.add(createdId);
+            break;
         }
-        return "Player 1 Wins";
+    }
+    return createdId;  
+}
+
+function createId(){
+    const characters: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let createdId = "";
+    for(let i = 0; i < 6; i++){
+        createdId += characters.charAt(Math.floor(Math.random() * characters.length));
+    }
+    return createdId;
+}
+
+
+    export async function setRoomService(playerName: string){
+        let roomId = setRoomId();
+        let playerId = setPlayerId(); 
+
+        const player1 : Player = {    
+            playerId: playerId,
+            playerName: playerName,
+            turn : true 
+        }
+        const player2 : Player = {
+            turn : false
+        }
+        const room: Room = {
+            roomId,
+            players: [player1, player2],
+            currentPlayerId: playerId,
+            pokeList: await generateRandomPokemon()
+        };
+
+        roomMap.set(roomId, room);
+
+        return room;
+    }
+
+
+export function joinGameService(roomId : string, playerName: string){
+    if(roomMap.has(roomId)){
+        let playerId = setPlayerId();
+        const player2 : Player = {playerId : playerId, playerName : playerName, turn: false};
+        let room = roomMap.get(roomId);
+        room!.roomId = roomId;
+        if(room){
+            room.players = [room.players![0] , player2] 
+            room.currentPlayerId = playerId;
+        }
+        return room;
     }
 }
 
-export function setSecretPokemon(players : Room[], secret: string){
-    (players[0].turn === true && players[1].turn === false && !players[0].secretPokemon) ? players[0].secretPokemon = secret : "";
-    (players[0].turn === false && players[1].turn === true && !players[1].secretPokemon) ? players[1].secretPokemon = secret : "";
-    
-    setTurns(players);
-    return players;
+
+
+
+export function endGameCondition(roomId : string, finalPkmn : Pokemon){
+    if(roomMap.has(roomId)){
+        let room = roomMap.get(roomId);
+        let players = room!.players!;
+        if(players[0].turn === true && players[1].turn === false && players[0].secretPokemon && players[1].secretPokemon){
+            if(players[1].secretPokemon === finalPkmn.name){
+                return "Player 1 Wins";
+            }
+            return "Player 2 Wins"        
+        }else if(players[0].turn === false && players[1].turn === true && players[0].secretPokemon && players[1].secretPokemon){
+            if(players[0].secretPokemon === finalPkmn.name){
+                return "Player 2 Wins";
+            }
+            return "Player 1 Wins";
+        }
+    }
 }
 
-export function setTurns(players : Room[]){
+export function setSecretPokemon(roomId : string, secret: string){
+    if(roomMap.has(roomId)){
+        let room = roomMap.get(roomId);
+        console.log(room);
+        let player = room!.players!;
+
+        (player[0].turn === true && player[1].turn === false && !player[0].secretPokemon) ? player[0].secretPokemon = secret : "";
+        (player[0].turn === false && player[1].turn === true && !player[1].secretPokemon) ? player[1].secretPokemon = secret : "";
+        
+        setTurns(room!);
+        return room;
+    }
+}
+
+export function setTurns(room : Room){
+    let players = room!.players!;
     if(players[0].turn === true && players[1].turn === false ){
         players[0].turn = false;
         players[1].turn = true;
+        room!.currentPlayerId = players[1].playerId;
         console.log("Player2 Turn");   
     }else{
-        // simulateP2(players); 
         players[0].turn = true;
         players[1].turn = false;
+        room!.currentPlayerId = players[0].playerId;
         console.log("Player1 Turn");
     }
     console.log(players);
-    return players;
+    return room;
 }
 
-// export function simulateP2(players : Room[]){
-//     for(let i = 10; i > 0; i--){
-//           console.log(i);
-//     }
-// }
 
-
-export async function  generateRandomPokemon(){
+async function  generateRandomPokemon(){
     let randomizedIds = new Set();
 
     while(randomizedIds.size < 24){
         let randomId = Math.floor(Math.random() * 1025) + 1;
         randomizedIds.add(randomId);
     }
- const randomizedRequests = Array.from(randomizedIds).map(async(id) => await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`));
+    const randomizedRequests = Array.from(randomizedIds).map(async(id) => await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`));
     const responses = await Promise.all(randomizedRequests);
     const pokemonData = responses.map((res)=>({
         id: res.data.id,
