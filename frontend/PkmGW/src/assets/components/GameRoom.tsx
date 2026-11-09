@@ -125,12 +125,7 @@ function GameRoom({roomId} : RoomId){
     //     pokeData();
     // }, []);
 
-    useEffect(()=>{
-        console.log(pokemon);
-    })
     
-
-
     const generateMessage = (source: string) =>{
             let activePlay : string = currentPlayer;
             //room.players![0].turn === true ? activePlay = room.players![0].playerId!  : activePlay = room.players![1].playerId! ;
@@ -196,7 +191,11 @@ function GameRoom({roomId} : RoomId){
 
         socket.connect();
 
-        socket.emit("join_room",roomId);
+        socket.on("join_room", ()=>{
+            socket.emit("join_room",roomId);
+            
+        });
+
 
         socket.on("connect", () => {
             console.log("Connected:", socket.id);
@@ -289,13 +288,13 @@ function GameRoom({roomId} : RoomId){
             { room?.players && room.players.length >= 2 ?
             <div className={room.players![0].turn === true ? "player1-div vs-div" : "player2-div vs-div" }>
                 <div className={room.players![0].turn === true ? "player1 left-glow" : "player1"}>
-                    <h1>{room.players![0].turn === true ? "Player 1's Turn" : "Player 1"}</h1>
+                    <h1>{room.players![0].turn === true ? `${room.players[0].playerName}'s Turn` : `${room.players[0].playerName}`}</h1>
                 </div>
                 <div className="vs">
                     <h1>V.S.</h1>
                 </div>
                 <div className={room.players![0].turn === false ? "player2 right-glow" : "player2"}>
-                    <h1>{room.players![0].turn === false ? "Player 2's Turn" : "Player 2"}</h1>
+                    <h1>{room.players![0].turn === false ? `${room.players[1].playerName}` : `${room.players[1].playerName}`}</h1>
                 </div>
             </div>
 
