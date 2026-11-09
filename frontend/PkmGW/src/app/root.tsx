@@ -1,4 +1,4 @@
-import {Outlet} from "react-router";
+import {Outlet, Scripts} from "react-router";
 import '../App.css'
 
 export default function App(){
@@ -13,7 +13,7 @@ return(
       <body>
         <div id="root"></div>
         <Outlet />
-        <script type="module" src="/src/main.tsx"></script>
+        <Scripts />
       </body>
     </html>
     );
