@@ -1,0 +1,1 @@
+import{D as e}from"./utils-BOOe1TG3.js";async function t(){return e(`/`)}export{t as clientLoader};

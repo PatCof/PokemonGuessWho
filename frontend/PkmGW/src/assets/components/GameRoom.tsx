@@ -49,7 +49,8 @@ function GameRoom({roomId} : RoomId){
     const [activePlayerId, setActivePlayerId] = useState<string>();
 
     const [pokemon, setPokemon] = useState<Pokemon[]>(room.pokeList);
-
+    const [player1, setPlayer1] = useState(room.players![0].playerName);
+    const [player2, setPlayer2] = useState(room.players![1].playerName);
 
     type Action = "INITIAL" | "SELECTION" | "CHOICE" | "OPPONENT";
     const [action, setAction] = useState<Action>("INITIAL");
@@ -105,7 +106,6 @@ function GameRoom({roomId} : RoomId){
         const response = await axios.post('http://localhost:3000/endTurn', {room: room});
         console.log(response.data);
         setRoom(response.data);
-        //response.data[0].turn === true ? setActivePlayer(room!.players![0]) : setActivePlayer(room!.players![1]);
         action === "SELECTION" ? setAction("OPPONENT") : setAction("SELECTION");
 
     }
@@ -116,19 +116,8 @@ function GameRoom({roomId} : RoomId){
         setRoom(response.data);
     }; 
 
-
-    // useEffect(()=>{
-    //     const pokeData = async () =>{
-    //         const pokemonList: Pokemon[] = await currentRoom.pokeList;
-    //         setPokemon(pokemonList);
-    //     }
-    //     pokeData();
-    // }, []);
-
-    
     const generateMessage = (source: string) =>{
             let activePlay : string = currentPlayer;
-            //room.players![0].turn === true ? activePlay = room.players![0].playerId!  : activePlay = room.players![1].playerId! ;
             switch(source){
                 case "SEND":
                     return {
@@ -175,9 +164,6 @@ function GameRoom({roomId} : RoomId){
         disableButtons();
     }, []);
 
-    // useEffect(()=>{
-    //     fetchPokemon();
-    // },[fetchPokemon]);
 
     useEffect(()=>{
         const textArea = textAreaRef.current;
@@ -189,16 +175,15 @@ function GameRoom({roomId} : RoomId){
 
     useEffect(()=>{
 
-        socket.connect();
-
-        socket.on("join_room", ()=>{
-            socket.emit("join_room",roomId);
-            
-        });
-
-
         socket.on("connect", () => {
             console.log("Connected:", socket.id);
+        });
+
+        socket.on("joined_room", (data)=>{
+            setRoom(data);
+            setPlayer1(data.players[0].playerName);
+            setPlayer2(data.players[1].playerName);
+            console.log(data.players[1].playerName);
         });
 
         socket.on("receive_message", (data)=>{
@@ -209,14 +194,22 @@ function GameRoom({roomId} : RoomId){
         socket.on("connection_err", (err)=>{
             console.error(err.message);
         });
+
+        socket.connect();
+
+
         return () => {
             socket.off("connect");
             socket.off("receive_message");
             socket.off("connection_err");
+            socket.off("joined_room");
             socket.disconnect();
-        
         }
     }, []);
+
+    useEffect(()=>{
+        socket.emit("join_room", room);
+    }, [room?.roomId]);
 
 
     function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
@@ -285,16 +278,16 @@ function GameRoom({roomId} : RoomId){
                     <a>Leave Match</a>
                 </div>
             </div>
-            { room?.players && room.players.length >= 2 ?
+            { room.players && room.players.length >= 1 ?
             <div className={room.players![0].turn === true ? "player1-div vs-div" : "player2-div vs-div" }>
                 <div className={room.players![0].turn === true ? "player1 left-glow" : "player1"}>
-                    <h1>{room.players![0].turn === true ? `${room.players[0].playerName}'s Turn` : `${room.players[0].playerName}`}</h1>
+                    <h1>{room.players![0].turn === true ? `${player1}'s Turn` : `${player1}`}</h1>
                 </div>
                 <div className="vs">
                     <h1>V.S.</h1>
                 </div>
                 <div className={room.players![0].turn === false ? "player2 right-glow" : "player2"}>
-                    <h1>{room.players![0].turn === false ? `${room.players[1].playerName}` : `${room.players[1].playerName}`}</h1>
+                    <h1>{room.players![0].turn === false ? `${player2}'s Turn` : `${player2}`}</h1>
                 </div>
             </div>
 

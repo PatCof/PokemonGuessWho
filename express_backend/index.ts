@@ -25,8 +25,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 app.use(cors());
 
-// app.use("/", randomizedRoute);
-
 app.use("/", secretRoute);
 
 app.use("/createRoom", playerRoute);
@@ -41,9 +39,11 @@ app.use("/joinRoom", roomRoute);
 io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
     
-    socket.on("join_room",(roomId)=>{
-        console.log(roomId);
-        socket.join(roomId);
+    socket.on("join_room",(room)=>{
+        console.log("HELLO");
+        console.log(room.roomId);
+        socket.join(room.roomId);
+        io.to(room.roomId).emit("joined_room", room);
     });
 
     socket.on("chat_message", (data) => {

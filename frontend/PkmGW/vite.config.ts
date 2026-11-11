@@ -3,4 +3,10 @@ import { defineConfig } from "vite";
 
 export default defineConfig({
   plugins: [reactRouter()],
+  server: {
+    host: '0.0.0.0',
+    watch: {
+        usePolling: true
+    }
+  }
 });

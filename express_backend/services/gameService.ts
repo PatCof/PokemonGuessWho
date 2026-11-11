@@ -127,7 +127,6 @@ export function endGameCondition(roomId : string, finalPkmn : Pokemon){
 export function setSecretPokemon(roomId : string, secret: string){
     if(roomMap.has(roomId)){
         let room = roomMap.get(roomId);
-        console.log(room);
         let player = room!.players!;
 
         (player[0].turn === true && player[1].turn === false && !player[0].secretPokemon) ? player[0].secretPokemon = secret : "";
