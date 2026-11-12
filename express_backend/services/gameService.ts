@@ -17,6 +17,7 @@ export interface Player {
     playerName ?: string,
     turn : boolean
     secretPokemon ?: string
+    action : "INITIAL" | "SELECTION" | "CHOICE" | "OPPONENT";
 }
 
 export interface Room {
@@ -71,10 +72,12 @@ function createId(){
         const player1 : Player = {    
             playerId: playerId,
             playerName: playerName,
-            turn : true 
+            turn : true,
+            action: "INITIAL" 
         }
         const player2 : Player = {
-            turn : false
+            turn : false,
+            action: "OPPONENT"
         }
         const room: Room = {
             roomId,
@@ -92,7 +95,7 @@ function createId(){
 export function joinGameService(roomId : string, playerName: string){
     if(roomMap.has(roomId)){
         let playerId = setPlayerId();
-        const player2 : Player = {playerId : playerId, playerName : playerName, turn: false};
+        const player2 : Player = {playerId : playerId, playerName : playerName, turn: false, action: "OPPONENT"};
         let room = roomMap.get(roomId);
         room!.roomId = roomId;
         if(room){
@@ -128,21 +131,23 @@ export function setSecretPokemon(roomId : string, secret: string){
     if(roomMap.has(roomId)){
         let room = roomMap.get(roomId);
         let player = room!.players!;
+        (player[0].turn === true && !player[0].secretPokemon) ? player[0].secretPokemon = secret : "";
+        (player[0].turn === false && !player[1].secretPokemon) ? player[1].secretPokemon = secret : "";
+        room = setTurns(room!);
+        console.log(room);
 
-        (player[0].turn === true && player[1].turn === false && !player[0].secretPokemon) ? player[0].secretPokemon = secret : "";
-        (player[0].turn === false && player[1].turn === true && !player[1].secretPokemon) ? player[1].secretPokemon = secret : "";
-        
-        setTurns(room!);
         return room;
     }
 }
 
 export function setTurns(room : Room){
     let players = room!.players!;
-    if(players[0].turn === true && players[1].turn === false ){
+    if(players[0].turn === true){
+        if(players[1].action === "OPPONENT") players[1].action = "INITIAL";
         players[0].turn = false;
         players[1].turn = true;
         room!.currentPlayerId = players[1].playerId;
+        console.log("ROOM:" + room);
         console.log("Player2 Turn");   
     }else{
         players[0].turn = true;
@@ -150,7 +155,6 @@ export function setTurns(room : Room){
         room!.currentPlayerId = players[0].playerId;
         console.log("Player1 Turn");
     }
-    console.log(players);
     return room;
 }
 

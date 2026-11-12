@@ -1,6 +1,5 @@
 import express, {type Express} from 'express';
 import cors from 'cors';
-// import {randomizedRoute} from "./routes/randomizedRoute.ts"
 import {secretRoute} from "./routes/secretRoute.ts";
 import {playerRoute} from "./routes/playerRoute.ts";
 import {turnRoute} from "./routes/turnRoute.ts";
@@ -8,7 +7,7 @@ import { winnerRoute } from './routes/winnerRoute.ts';
 import { roomRoute } from './routes/roomRoute.ts';
 import {Server} from "socket.io";
 import { createServer } from 'node:http';
-
+import {endTurn, setSecret} from './controllers/gameController.ts';
 
 
 const app :Express = express();
@@ -46,6 +45,16 @@ io.on("connection", (socket) => {
         io.to(room.roomId).emit("joined_room", room);
     });
 
+    socket.on("send_pokemon", (pokemonData) => {
+        const playerRoom = setSecret(pokemonData.name, pokemonData.room);
+        io.to(pokemonData.room.roomId).emit("receive_pokemon",playerRoom);
+    });
+
+    socket.on("end_turn", (room)=>{
+        const turnChangedRoom = endTurn(room);
+        io.to(room.roomId).emit("receive_turn_change", turnChangedRoom);
+    });
+    
     socket.on("chat_message", (data) => {
         console.log("Received chat_message:", data);
 

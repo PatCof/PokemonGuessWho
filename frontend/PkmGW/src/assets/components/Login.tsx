@@ -45,13 +45,15 @@ function Login(){
                 <div className="inner-login">
                     <div className="room-creation">
                         <h2>Create a Room</h2>
-                        <button onClick={createRoom}>Create...</button>
+                        <button onClick={createRoom}>Create</button>
                     </div>
                     <div className="vertical-bar"></div>
                     <div className="join-room">
                         <h2>Join Room</h2>
-                        <input type="text" placeholder="Enter Room ID" value={roomIdValue} onChange={handleRoomChange}></input>
-                        <button onClick={joinRoom}>Join Room...</button>
+                        <div className="inner-join-room">
+                            <input className="join-room-input" type="text" placeholder="Enter Room ID" value={roomIdValue} onChange={handleRoomChange}></input>
+                            <button className="join-room-button" onClick={joinRoom}>Join</button>
+                        </div>
                     </div>
                 </div>
             </div>
