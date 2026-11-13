@@ -24,7 +24,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
 const allowedOrigins = [
     "http://localhost:5173",
-    "https://your-frontend.vercel.app"
+    "https://pokemon-guess-who-delta.vercel.app/"
 ];
 
 app.use(cors({
