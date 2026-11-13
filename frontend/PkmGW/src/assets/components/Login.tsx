@@ -19,14 +19,14 @@ function Login(){
 
 
     const createRoom =async() =>{
-        const response = await axios.post("http://localhost:3000/createRoom", {playerName : playerName});
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/createRoom`, {playerName : playerName});
         const roomId:string = response.data.roomId;
         console.log(response.data);
         navigate(`/Game/${roomId}`, {state: {room: response.data}});
     }
 
     const joinRoom = async () =>{
-        const response = await axios.post("http://localhost:3000/joinRoom", {roomId: roomIdValue, playerName: playerName});
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/joinRoom`, {roomId: roomIdValue, playerName: playerName});
         if(response.data !== undefined && response.data){
             navigate(`/Game/${roomIdValue}`, {state: {room: response.data}});
         }
