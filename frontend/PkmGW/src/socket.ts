@@ -21,7 +21,7 @@ interface SocketData {
 }
 
 export function createSocket(){
-  return io("http://localhost:3000", {autoConnect: false});
+  return io(import.meta.env.VITE_BACKEND_URL, {autoConnect: false});
 }
 
 

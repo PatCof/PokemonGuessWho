@@ -8,15 +8,14 @@ import { roomRoute } from './routes/roomRoute.ts';
 import {Server} from "socket.io";
 import { createServer } from 'node:http';
 import {endGame, endTurn, setSecret} from './controllers/gameController.ts';
-import { endGameCondition } from './services/gameService.ts';
 
 
 const app :Express = express();
-const port = 3000;
+const PORT = process.env.PORT || 3000;
 const server = createServer(app);
 const io = new Server(server,{
   cors: {
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "pokemon-guess-who-delta.vercel.app"],
     methods: ["GET", "POST"]
   }});
 
@@ -74,6 +73,6 @@ io.on("connection", (socket) => {
     });
 });
 
-server.listen(port, () =>{
-    console.log(`Listening to port ${port}`);
+server.listen(PORT, () =>{
+    console.log(`Listening to port ${PORT}`);
 });
