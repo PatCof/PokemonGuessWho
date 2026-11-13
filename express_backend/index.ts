@@ -15,14 +15,23 @@ const PORT = process.env.PORT || 3000;
 const server = createServer(app);
 const io = new Server(server,{
   cors: {
-    origin: ["http://localhost:5173", "pokemon-guess-who-delta.vercel.app"],
+    origin: ["http://localhost:5173", "https://pokemon-guess-who-delta.vercel.app/"],
     methods: ["GET", "POST"]
   }});
 
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); 
-app.use(cors());
+const allowedOrigins = [
+    "http://localhost:5173",
+    "https://your-frontend.vercel.app"
+];
+
+app.use(cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    credentials: true
+}));
 
 app.use("/", secretRoute);
 
