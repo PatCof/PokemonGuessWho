@@ -12,16 +12,8 @@ import {endGame, endTurn, setSecret} from './controllers/gameController.ts';
 
 const app :Express = express();
 const PORT = process.env.PORT || 3000;
-const server = createServer(app);
-const io = new Server(server,{
-  cors: {
-    origin: ["http://localhost:5173", "https://pokemon-guess-who-delta.vercel.app/"],
-    methods: ["GET", "POST"]
-  }});
 
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); 
 const allowedOrigins = [
     "http://localhost:5173",
     "https://pokemon-guess-who-delta.vercel.app/"
@@ -32,6 +24,21 @@ app.use(cors({
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     credentials: true
 }));
+
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true })); 
+
+
+const server = createServer(app);
+
+const io = new Server(server,{
+  cors: {
+    origin: ["http://localhost:5173", "https://pokemon-guess-who-delta.vercel.app/"],
+    methods: ["GET", "POST"]
+  }});
+
+
 
 app.use("/", secretRoute);
 
