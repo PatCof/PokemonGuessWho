@@ -1,11 +1,12 @@
 import '.././css/GameRoom.css';
+import '../css/AnswerModal.css'
 import GameCard from '../components/GameCard';
 import { useRef ,useState, useEffect } from 'react';
 import AnswerModal from './AnswerModal';
 import SecretSelectionModal from './SecretSelectionModal';
 import axios from 'axios';
 import OutcomeModal from './OutcomeModal';
-import { useLocation, useParams } from "react-router";
+import { redirect, useLocation, useNavigate } from "react-router";
 import { createSocket } from '../../socket';
 import { PulseLoader } from 'react-spinners';
 
@@ -44,19 +45,15 @@ interface RoomId{roomId : string};
 const socket = createSocket();
 
 function GameRoom({roomId} : RoomId){
-    //const { roomIdValue } = roomId;
     const location = useLocation();
-    const playerName = location.state?.playerName;
     const currentRoom = location.state?.room;
     const [room, setRoom] = useState<Room>(currentRoom);    
     const [currentPlayer,setCurrentPlayer] = useState<string>("");
 
-    const ref = useRef(true);
     const [pokemon, setPokemon] = useState<Pokemon[] | null>(null);
     const [player1, setPlayer1] = useState<string>("");
     const [player2, setPlayer2] = useState<string>("");
 
-    const [isDisabled, setIsDisabled] = useState<boolean>(false);
     const [isSecretSelectionOpen, setIsSecretSelectionOpen] = useState<boolean>(true);
     const [isAnswerModalOpen, setIsAnswerModalOpen] = useState<boolean>(false);
     const [isOutcomeModalOpen, setIsOutcomeModalOpen] = useState<boolean>(false);
@@ -70,7 +67,6 @@ function GameRoom({roomId} : RoomId){
     const [winner, setWinner] = useState<string>("");
 
     const [toggledP1Cards, setToggledP1Cards] = useState<number[]>([]);
-    const [toggledP2Cards, setToggledP2Cards] = useState<number[]>([]);
 
     const selectButtonRef = useRef<HTMLButtonElement>(null);
     const finalButtonRef = useRef<HTMLButtonElement>(null);
@@ -80,39 +76,26 @@ function GameRoom({roomId} : RoomId){
 
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
-    const [isMyTurn, setIsMyTurn] = useState<boolean>(!(room!.players![0].action === "SELECTION" && currentPlayer === room.currentPlayerId));
+    const [isSelectEnabled, setIsSelectEnabled] = useState<boolean>(true);
+    const [isButtonEnabled, setButtonEnabled] = useState<boolean>(true);
+    const [isFinalEnabled, setIsFinalEnabled] = useState<boolean>(true);
 
     const disableButtons = () =>{
-        if(selectButtonRef.current) selectButtonRef.current.disabled = true;
-        if(finalButtonRef.current) finalButtonRef.current.disabled = true;
-        if(endButtonRef.current) endButtonRef.current.disabled = true;
-        if(yesButtonRef.current) yesButtonRef.current.disabled = true;
-        if(noButtonRef.current) noButtonRef.current.disabled = true;
+        setIsSelectEnabled(true);
+        setButtonEnabled(true);
+        setIsFinalEnabled(true);
     }
 
-    const enableButtons = () =>{
-        if(selectButtonRef.current) selectButtonRef.current.disabled = true;
-        if(finalButtonRef.current) finalButtonRef.current.disabled = false;
-        if(endButtonRef.current) endButtonRef.current.disabled = false;
-        if(yesButtonRef.current) yesButtonRef.current.disabled = false;
-        if(noButtonRef.current) noButtonRef.current.disabled = false;
-    }
-
-
-    const sendAnswer = async () =>{
-        const response = await axios.post('http://localhost:3000/sendAnswer', {finalPkmn : finalPkmn, room: room});
-        setWinner(response.data);
-        setIsAnswerModalOpen(false);
-        setIsOutcomeModalOpen(true);
-        console.log(response.data);
-    }
+    const sendAnswer = () =>{
+        const pokemonData = {
+            finalPkmn: finalPkmn,
+            room: room
+        }
+        socket.emit("final_answer", pokemonData);
+    };
 
     const endTurn = () =>{
-        if(selectButtonRef.current?.disabled === true){
-            enableButtons();
-        }else{
-            disableButtons();
-        }
+        setAction("SELECTION");
         socket.emit("end_turn", room);
     };
 
@@ -121,7 +104,6 @@ function GameRoom({roomId} : RoomId){
             name: name,
             room: room
         }
-        
         socket.emit("send_pokemon", pokemonData);
 
     };
@@ -207,6 +189,14 @@ function GameRoom({roomId} : RoomId){
             setRoom(room);
         });
 
+        socket.on("receive_final", (data)=>{
+            console.log(data);
+            setWinner(data);
+            setIsAnswerModalOpen(false);
+            setIsOutcomeModalOpen(true);
+            console.log(data);
+        });
+
         socket.connect();
 
 
@@ -216,7 +206,8 @@ function GameRoom({roomId} : RoomId){
             socket.off("connection_err");
             socket.off("joined_room");
             socket.off("receive_pokemon");
-            socket.off("receive_turn_change")
+            socket.off("receive_turn_change");
+            socket.off("receive_final");
             socket.disconnect();
         }
     }, []);
@@ -228,37 +219,47 @@ function GameRoom({roomId} : RoomId){
     useEffect(()=>{
         setPokemon(room.pokeList!);
         setCurrentPlayer(room.currentPlayerId!);
+    },[]);
+
+    useEffect(()=>{
         disableButtons();
     },[]);
 
     useEffect(()=>{
-        if(!isMyTurn){
-            enableButtons();
+        disableButtons();
+
+        if (!room?.players) return;
+        const bothSelected =
+        room.players[0].secretPokemon != null &&
+        room.players[1].secretPokemon != null;
+
+        if (!bothSelected) return;
+
+        if (room!.currentPlayerId === currentPlayer) {
+            setIsSelectEnabled(true);
+            setButtonEnabled(false);
+            setIsFinalEnabled(false);
         }
-    }, [isMyTurn]);
+    
+    },[room, room!.currentPlayerId]);
 
 
     function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
         switch (action){
         case "INITIAL":
-            if(room!.players![0].turn === true && currentPlayer === room!.players![0].playerId && room!.players![0].action === "INITIAL"){
-                room!.players![0].action = "SELECTION";
-                room!.players![1].action = "INITIAL";
-                sendPokemonFunc(name, room);
-                setIsMyTurn(room!.players![0].action === "SELECTION" && currentPlayer === room.currentPlayerId)
-            }
+            const player = room.players?.find(
+                p => p.playerId === currentPlayer
+            );
 
-            if(room!.players![1].turn === true && currentPlayer === room!.players![1].playerId && room!.players![1].action === "INITIAL"){
-                room!.players![1].action = "SELECTION";
-                sendPokemonFunc(name, room);
-                setAction("SELECTION");
-                setIsMyTurn(room!.players![1].action === "SELECTION" && currentPlayer === room.currentPlayerId);
+            if (!player || player.action !== "INITIAL") return;
 
-            }
+            sendPokemonFunc(name, room);
+            setAction("SELECTION");
             break;
 
+
         case "SELECTION":
-            if(room!.players![0].turn === true){
+            // if(room!.players![0].turn === true){
                 if(toggledP1Cards.find(item => item === index)){
                     setToggledP1Cards(toggledP1Cards.filter(i => i !== index));
                     setRemaining(remaining => remaining + 1);
@@ -266,17 +267,7 @@ function GameRoom({roomId} : RoomId){
                     setToggledP1Cards([...toggledP1Cards, index]);
                     setRemaining(remaining => remaining - 1);
                 }   
-            }    
-        
-            else if(room.players![0].turn === false){
-                if(toggledP2Cards.find(item => item === index)){
-                    setToggledP2Cards(toggledP2Cards.filter(i => i !== index));
-                    setRemaining(remaining => remaining + 1);
-                }else{
-                    setToggledP2Cards([...toggledP2Cards, index]);
-                    setRemaining(remaining => remaining - 1);
-                }   
-            }    
+
             break;
         
         case "CHOICE":
@@ -295,17 +286,27 @@ function GameRoom({roomId} : RoomId){
         }
 
     }
+    const navigate = useNavigate();
 
     const closeAnswerModal = () => setIsAnswerModalOpen(false);
     const closeSecretSelectionModal = () => setIsSecretSelectionOpen(false);
-    const closeOutcomeModal = () => setIsOutcomeModalOpen(false);
+    const closeOutcomeModal = () => {setIsOutcomeModalOpen(false); navigate("/");};
 
     return(
     <>
     { room!.players![1].playerId === undefined
         ?
         <div>
-            <PulseLoader></PulseLoader>
+            <div className="backdrop-modal">
+            <div className="modal">  
+                <div className="modal-text">
+                    <h1>Waiting for Player 2:</h1>
+                    <h2 className="modal-text-id">Your Room Id: </h2>
+                    <h2>{roomId}</h2>
+                    <PulseLoader></PulseLoader>
+                </div>
+            </div>
+            </div>
         </div>
         :
         <div className="main-game-room">
@@ -328,9 +329,6 @@ function GameRoom({roomId} : RoomId){
                     
                     
                 </div>
-                {/* <div className="vs">
-                    <h1>V.S.</h1>
-                </div> */}
                 <div className={room.players![0].turn === false ? "player2 right-glow" : "player2"}>
                     { currentPlayer === room.players![1].playerId 
                         ?
@@ -356,13 +354,14 @@ function GameRoom({roomId} : RoomId){
                         </div>
                     </div>
                     <div className="board-div">
-                        {pokemon && pokemon.map((pk, index)=><GameCard name={pk.name} sprite={pk.sprite} key={index} index={pk.id} action={action} types={pk.types} room={room} onClick={selectPokemon} isP1Toggled={toggledP1Cards} isP2Toggled={toggledP2Cards}></GameCard>)}
+                        {/* {pokemon && pokemon.map((pk, index)=><GameCard name={pk.name} sprite={pk.sprite} key={index} index={pk.id} action={action} types={pk.types} room={room} onClick={selectPokemon} isP1Toggled={toggledP1Cards} isP2Toggled={toggledP2Cards}></GameCard>)} */}
+                        {pokemon && pokemon.map((pk, index)=><GameCard name={pk.name} sprite={pk.sprite} key={index} index={pk.id} action={action} types={pk.types} room={room} onClick={selectPokemon} isP1Toggled={toggledP1Cards}></GameCard>)}
 
                     </div>  
                     <div className="buttons-div">
-                        <button ref={selectButtonRef} onClick={()=>{setAction("SELECTION") ; setIsDisabled(false)}} disabled={isMyTurn}>Select/Deselect Pokemon</button>
-                        <button ref={finalButtonRef} onClick={()=>{setAction("CHOICE") ; setIsDisabled(true)}} disabled={isMyTurn}>Select Final Answer</button>
-                        <button ref={endButtonRef} onClick={()=>{endTurn()}} disabled={isMyTurn}>End Turn</button>
+                        <button ref={selectButtonRef} onClick={()=>{setAction("SELECTION") ; setIsSelectEnabled(true); setIsFinalEnabled(false);}} disabled={isSelectEnabled}>Select/Deselect Pokemon</button>
+                        <button ref={finalButtonRef} onClick={()=>{setAction("CHOICE")  ; setIsSelectEnabled(false); setIsFinalEnabled(true);}} disabled={isFinalEnabled}>Select Final Answer</button>
+                        <button ref={endButtonRef} onClick={()=>{endTurn()}} disabled={isButtonEnabled}>End Turn</button>
                     </div>
                     <div className="whitespace"></div>
                 </div>

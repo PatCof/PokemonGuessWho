@@ -214,3 +214,7 @@ textarea{
 .right-glow{
     box-shadow: inset -3px 3px 2px rgb(255, 213, 0);
 }
+
+.modal-text-id{
+    user-select: none;
+}

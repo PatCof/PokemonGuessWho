@@ -7,7 +7,8 @@ import { winnerRoute } from './routes/winnerRoute.ts';
 import { roomRoute } from './routes/roomRoute.ts';
 import {Server} from "socket.io";
 import { createServer } from 'node:http';
-import {endTurn, setSecret} from './controllers/gameController.ts';
+import {endGame, endTurn, setSecret} from './controllers/gameController.ts';
+import { endGameCondition } from './services/gameService.ts';
 
 
 const app :Express = express();
@@ -53,6 +54,11 @@ io.on("connection", (socket) => {
     socket.on("end_turn", (room)=>{
         const turnChangedRoom = endTurn(room);
         io.to(room.roomId).emit("receive_turn_change", turnChangedRoom);
+    });
+
+    socket.on("final_answer", (pokemonData)=>{
+        const finalAnswer = endGame(pokemonData.finalPkmn, pokemonData.room);
+        io.to(pokemonData.room.roomId).emit("receive_final", finalAnswer);
     });
     
     socket.on("chat_message", (data) => {

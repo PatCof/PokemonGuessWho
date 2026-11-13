@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import {type Room, endGameCondition, setTurns, setSecretPokemon, setRoomService, joinGameService } from '../services/gameService.ts';
+import {type Room, endGameCondition, setTurns, setSecretPokemon, setRoomService, joinGameService, type Pokemon } from '../services/gameService.ts';
 
 
 export const setBoardGame = async (req:Request, res:Response, next:NextFunction) =>{
@@ -40,13 +40,13 @@ export const endTurn = (room : Room) =>{
 }
 
 
-export const endGame = (req : Request, res: Response, next: NextFunction) => {
+export const endGame = (finalPkmn: Pokemon, room: Room) => {
     try{
-        let winner = endGameCondition(req.body.finalPkmn, req.body.room);
+        let winner = endGameCondition(room, finalPkmn);
         console.log(winner);
-        res.status(200).json(winner);
+        return winner;
     }catch(error){
-        next(error);
+        console.log(error);
     }
 }
 

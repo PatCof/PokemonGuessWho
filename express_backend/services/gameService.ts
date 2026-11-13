@@ -109,20 +109,23 @@ export function joinGameService(roomId : string, playerName: string){
 
 
 
-export function endGameCondition(roomId : string, finalPkmn : Pokemon){
-    if(roomMap.has(roomId)){
-        let room = roomMap.get(roomId);
+export function endGameCondition(room : Room, finalPkmn : Pokemon){
+    if(roomMap.has(room.roomId)){
         let players = room!.players!;
-        if(players[0].turn === true && players[1].turn === false && players[0].secretPokemon && players[1].secretPokemon){
+        const checkSecretPokemon = Boolean(players[0].secretPokemon && players[1].secretPokemon);
+
+        if(players[0].turn === true && checkSecretPokemon){
             if(players[1].secretPokemon === finalPkmn.name){
-                return "Player 1 Wins";
+                return `Player 1 ${players[0].playerName} Wins`
+            }else if(players[1].secretPokemon !== finalPkmn.name){
+                return `Player 2 ${players[1].playerName} Wins`;
             }
-            return "Player 2 Wins"        
-        }else if(players[0].turn === false && players[1].turn === true && players[0].secretPokemon && players[1].secretPokemon){
+        }else if(players[0].turn === false && checkSecretPokemon){
             if(players[0].secretPokemon === finalPkmn.name){
-                return "Player 2 Wins";
+                return `Player 2 ${players[1].playerName} Wins`
+            }else if(players[0].secretPokemon !== finalPkmn.name){
+                return `Player 1 ${players[0].playerName} Wins`;
             }
-            return "Player 1 Wins";
         }
     }
 }
@@ -134,7 +137,6 @@ export function setSecretPokemon(roomId : string, secret: string){
         (player[0].turn === true && !player[0].secretPokemon) ? player[0].secretPokemon = secret : "";
         (player[0].turn === false && !player[1].secretPokemon) ? player[1].secretPokemon = secret : "";
         room = setTurns(room!);
-        console.log(room);
 
         return room;
     }
@@ -144,12 +146,14 @@ export function setTurns(room : Room){
     let players = room!.players!;
     if(players[0].turn === true){
         if(players[1].action === "OPPONENT") players[1].action = "INITIAL";
+        players[0].action = "SELECTION";
+
         players[0].turn = false;
         players[1].turn = true;
         room!.currentPlayerId = players[1].playerId;
-        console.log("ROOM:" + room);
         console.log("Player2 Turn");   
     }else{
+        players[1].action = "SELECTION";
         players[0].turn = true;
         players[1].turn = false;
         room!.currentPlayerId = players[0].playerId;
