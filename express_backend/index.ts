@@ -37,9 +37,9 @@ const server = createServer(app);
 const io = new Server(server,{
   cors: {
     origin: ["http://localhost:5173",
-    "https://pokemon-guess-who-delta.vercel.app/",
-    "https://pokemon-guess-who-git-main-patrick-cofreros-projects.vercel.app/",
-    "https://pokemon-guess-g104h8v2w-patrick-cofreros-projects.vercel.app/",
+    "https://pokemon-guess-who-delta.vercel.app",
+    "https://pokemon-guess-who-git-main-patrick-cofreros-projects.vercel.app",
+    "https://pokemon-guess-g104h8v2w-patrick-cofreros-projects.vercel.app",
     "https://pokemon-guess-bnfr29ji9-patrick-cofreros-projects.vercel.app",
 ],
     methods: ["GET", "POST"]
