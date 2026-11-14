@@ -4,12 +4,11 @@ import GameCard from '../components/GameCard';
 import { useRef ,useState, useEffect } from 'react';
 import AnswerModal from './AnswerModal';
 import SecretSelectionModal from './SecretSelectionModal';
-import axios from 'axios';
 import OutcomeModal from './OutcomeModal';
-import { redirect, useLocation, useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { createSocket } from '../../socket';
 import { PulseLoader } from 'react-spinners';
-
+import { type KeyboardEvent } from 'react';
 interface Pokemon {
     id : number,
     name : string,
@@ -75,6 +74,7 @@ function GameRoom({roomId} : RoomId){
     const noButtonRef = useRef<HTMLButtonElement>(null);
 
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
+    const anchorRef = useRef<HTMLDivElement>(null);
 
     const [isSelectEnabled, setIsSelectEnabled] = useState<boolean>(true);
     const [isButtonEnabled, setButtonEnabled] = useState<boolean>(true);
@@ -243,6 +243,16 @@ function GameRoom({roomId} : RoomId){
     
     },[room, room!.currentPlayerId]);
 
+    useEffect(()=>{
+        anchorRef.current?.scrollIntoView({ behavior: "smooth" });
+    },[messages]);
+
+    function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
+      if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
+        event.preventDefault();
+        
+      }
+    }
 
     function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
         switch (action){
@@ -376,11 +386,16 @@ function GameRoom({roomId} : RoomId){
                                 {m.msg}
                             </div>
                         )
+                        
                         : <div></div>}
+                        <div className="anchor" ref={anchorRef}></div>
                     </div>
                     { action !== "OPPONENT" ?
                         <div className="message-input">
-                            <textarea ref={textAreaRef} rows={1} cols={100} value={inputValue} onChange={(e) =>{setInputValue(e.target.value)}} placeholder='Enter Question'></textarea>
+                            <textarea onKeyDown={(event) => {if(event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing){
+                                event.preventDefault();
+                                sendMessage("SEND");
+                            }}} ref={textAreaRef} rows={1} cols={100} value={inputValue} onChange={(e) =>{setInputValue(e.target.value)}} placeholder='Enter Question'></textarea>
                             <button onClick={()=> sendMessage("SEND")}>Send</button>
                         </div>
                         :
