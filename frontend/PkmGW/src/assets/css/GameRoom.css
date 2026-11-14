@@ -167,6 +167,7 @@ h2{
 
 .message-div{
     height: 68vh;
+    max-width: 30vw;
     background-color: #CEE0E9;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -183,7 +184,7 @@ h2{
     padding: 0.5rem;
     overflow-wrap:break-word;
     display: block;
-    width:fit-content;
+    max-width: 100%;
     margin: 0.5rem;
 }
 
