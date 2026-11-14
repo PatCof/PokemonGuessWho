@@ -59,6 +59,7 @@ function GameRoom({roomId} : RoomId){
     const [finalPkmn, setFinalPkmn] = useState<Pokemon>();
     const [action, setAction] = useState<Action>("INITIAL");
     const [remaining, setRemaining] = useState<number>(24);
+    const [isOpponentTyping, setIsOpponentTyping] = useState(false);
 
     const [messages, setMessages] = useState<Message[]>([]);
     const [inputValue, setInputValue] = useState<string>("");
@@ -79,6 +80,60 @@ function GameRoom({roomId} : RoomId){
     const [isSelectEnabled, setIsSelectEnabled] = useState<boolean>(true);
     const [isButtonEnabled, setButtonEnabled] = useState<boolean>(true);
     const [isFinalEnabled, setIsFinalEnabled] = useState<boolean>(true);
+
+    const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const isTyping = useRef(false);
+
+    const handleInputChange = (value: string) => {
+        setInputValue(value);
+
+        if (value.trim() === "") {
+            stopTyping();
+            return;
+        }
+
+        if (!isTyping.current) {
+            isTyping.current = true;
+
+            socket.emit("typing_start", {
+                roomId: roomId,
+                activePlayer: currentPlayer
+            });
+        }
+
+        if (typingTimer.current) {
+            clearTimeout(typingTimer.current);
+        }
+
+        typingTimer.current = setTimeout(() => {
+            stopTyping();
+        }, 1000);
+    };
+
+
+    const stopTyping = () => {
+    if (typingTimer.current) {
+        clearTimeout(typingTimer.current);
+        typingTimer.current = null;
+    }
+
+    if (isTyping.current) {
+        isTyping.current = false;
+
+        socket.emit("typing_stop", {
+            roomId: roomId
+        });
+    }
+    };
+
+
+
+
+
+
+
+
+
 
     const disableButtons = () =>{
         setIsSelectEnabled(true);
@@ -197,6 +252,14 @@ function GameRoom({roomId} : RoomId){
             console.log(data);
         });
 
+        socket.on("user_typing", (data) => {
+            setIsOpponentTyping(true);
+        });
+
+        socket.on("user_stopped_typing", () => {
+            setIsOpponentTyping(false);
+        });
+
         socket.connect();
 
 
@@ -208,6 +271,8 @@ function GameRoom({roomId} : RoomId){
             socket.off("receive_pokemon");
             socket.off("receive_turn_change");
             socket.off("receive_final");
+            socket.off("user_typing");
+            socket.off("user_stopped_typing");
             socket.disconnect();
         }
     }, []);
@@ -384,16 +449,20 @@ function GameRoom({roomId} : RoomId){
                             messages.map((m, index) => 
                             <div className={ m.activePlayer === currentPlayer ? "activePlayer msgs" : "otherPlayer msgs"} key={index}>
                                 {m.msg}
-                            </div>
-                        )
+                            </div>     
+                    )
                         
                         : <div></div>}
+                        {isOpponentTyping && (
+                            <p>{currentPlayer === room!.players![0].playerId ? room!.players![1].playerName : room!.players![0].playerName } is typing...</p>
+                        )}
                         <div className="anchor" ref={anchorRef}></div>
                     </div>
                     { action !== "OPPONENT" ?
                         <div className="message-input">
                             <textarea onKeyDown={(event) => {if(event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing){
                                 event.preventDefault();
+                                stopTyping();
                                 sendMessage("SEND");
                             }}} ref={textAreaRef} rows={1} cols={100} value={inputValue} onChange={(e) =>{setInputValue(e.target.value)}} placeholder='Enter Question'></textarea>
                             <button onClick={()=> sendMessage("SEND")}>Send</button>
