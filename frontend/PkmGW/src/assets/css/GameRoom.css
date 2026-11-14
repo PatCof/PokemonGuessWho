@@ -218,3 +218,7 @@ textarea{
 .modal-text-id{
     user-select: none;
 }
+
+.typing{
+    height:2rem;
+}

@@ -96,7 +96,7 @@ function GameRoom({roomId} : RoomId){
             isTyping.current = true;
 
             socket.emit("typing_start", {
-                roomId: roomId,
+                roomId: room.roomId,
                 activePlayer: currentPlayer
             });
         }
@@ -121,18 +121,10 @@ function GameRoom({roomId} : RoomId){
         isTyping.current = false;
 
         socket.emit("typing_stop", {
-            roomId: roomId
+            roomId: room.roomId
         });
     }
     };
-
-
-
-
-
-
-
-
 
 
     const disableButtons = () =>{
@@ -312,12 +304,6 @@ function GameRoom({roomId} : RoomId){
         anchorRef.current?.scrollIntoView({ behavior: "smooth" });
     },[messages]);
 
-    function onKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-      if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
-        event.preventDefault();
-        
-      }
-    }
 
     function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
         switch (action){
@@ -453,10 +439,12 @@ function GameRoom({roomId} : RoomId){
                     )
                         
                         : <div></div>}
-                        {isOpponentTyping && (
-                            <p>{currentPlayer === room!.players![0].playerId ? room!.players![1].playerName : room!.players![0].playerName } is typing...</p>
-                        )}
                         <div className="anchor" ref={anchorRef}></div>
+                     {isOpponentTyping && (
+                            <div className='typing'>
+                                <p>{currentPlayer === room!.players![0].playerId ? room!.players![1].playerName : room!.players![0].playerName } is typing...</p>
+                            </div>
+                        )}
                     </div>
                     { action !== "OPPONENT" ?
                         <div className="message-input">
