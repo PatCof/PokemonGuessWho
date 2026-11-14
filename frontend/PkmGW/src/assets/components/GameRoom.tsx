@@ -77,6 +77,8 @@ function GameRoom({roomId} : RoomId){
     const textAreaRef = useRef<HTMLTextAreaElement>(null);
     const anchorRef = useRef<HTMLDivElement>(null);
 
+    const [secretPokemon, setSecretPokemon] = useState<Pokemon | null>(null);
+
     const [isSelectEnabled, setIsSelectEnabled] = useState<boolean>(true);
     const [isButtonEnabled, setButtonEnabled] = useState<boolean>(true);
     const [isFinalEnabled, setIsFinalEnabled] = useState<boolean>(true);
@@ -126,7 +128,6 @@ function GameRoom({roomId} : RoomId){
     }
     };
 
-
     const disableButtons = () =>{
         setIsSelectEnabled(true);
         setButtonEnabled(true);
@@ -152,7 +153,7 @@ function GameRoom({roomId} : RoomId){
             room: room
         }
         socket.emit("send_pokemon", pokemonData);
-
+        setSecretPokemon(pokemon!.find(p => p.name === name) ?? null) ;
     };
 
     const generateMessage = (source: string) =>{
@@ -220,7 +221,6 @@ function GameRoom({roomId} : RoomId){
         });
 
         socket.on("receive_message", (data)=>{
-            console.log(data);
             setMessages((prevMessages) => [...prevMessages, data]);
         });
 
@@ -237,11 +237,9 @@ function GameRoom({roomId} : RoomId){
         });
 
         socket.on("receive_final", (data)=>{
-            console.log(data);
             setWinner(data);
             setIsAnswerModalOpen(false);
             setIsOutcomeModalOpen(true);
-            console.log(data);
         });
 
         socket.on("user_typing", (data) => {
@@ -374,11 +372,11 @@ function GameRoom({roomId} : RoomId){
             {isOutcomeModalOpen && <OutcomeModal onClose={closeOutcomeModal} winner={winner}></OutcomeModal>}
             {isSecretSelectionOpen && <SecretSelectionModal onClose={closeSecretSelectionModal}></SecretSelectionModal>}
             {isAnswerModalOpen && <AnswerModal onSend={sendAnswer} onClose={closeAnswerModal} pkmn={finalPkmn}></AnswerModal>}
-            <div className="text-div">
+            {/* <div className="text-div">
                 <div className="nav-bar">
                     <a>Leave Match</a>
                 </div>
-            </div>
+            </div> */}
             { room && room.players && room.players.length >= 1 ?
             <div className={room.players![0].turn === true ? "player1-div vs-div" : "player2-div vs-div" }>
                 <div className={room.players![0].turn === true ? "player1 left-glow" : "player1"}>
@@ -407,7 +405,7 @@ function GameRoom({roomId} : RoomId){
                     <div className="info-div">
                         <div className="chosen-pkmn-div">
                          {room?.players && room.players.length >= 2 ?
-                          <h2 className="chosen-pkmn-text">Your Secret Pokemon: {currentPlayer === room.players![0].playerId ? room.players![0].secretPokemon : room.players![1].secretPokemon} </h2>
+                          <h2 className="chosen-pkmn-text">Your Secret Pokemon: {currentPlayer === room.players![0].playerId ? room.players![0].secretPokemon : room.players![1].secretPokemon} {secretPokemon && <img className="sprite" src={secretPokemon.sprite}></img>}</h2>
                          : <div></div>}
                         <div className="remaining-pkmn-div">
                             <p>{remaining}/24</p>

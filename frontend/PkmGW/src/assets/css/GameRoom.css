@@ -76,11 +76,13 @@
 .remaining-pkmn-div{
     background-color: 	#3C91B9;
     margin: 0.25rem;
+    display: flex;
     border-radius: 1rem;  
     text-align: center;
     margin-left: auto;
     width: 4rem;
     align-items: center;
+    justify-content: center;
     font-size: 14px;
 }
 
@@ -95,6 +97,11 @@
 
 .chosen-pkmn-text{
     color: #D4D5E2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 30px;
 }
 
 
@@ -221,4 +228,10 @@ textarea{
 
 .typing{
     height:2rem;
+}
+
+.sprite{
+    width: 1rem;
+    height:1rem;
+    transform: scale(5,5);
 }
