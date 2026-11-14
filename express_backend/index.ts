@@ -92,13 +92,13 @@ io.on("connection", (socket) => {
     });
 
     socket.on("typing_start", (data) => {
-        socket.to(data.roomId).emit("user_typing", {
+        socket.to(data).emit("user_typing", {
             activePlayer: data.activePlayer
         });
     });
 
     socket.on("typing_stop", (data) => {
-        socket.to(data.roomId).emit("user_stopped_typing");
+        socket.to(data).emit("user_stopped_typing");
     });
 
     socket.on("disconnect", () => {

@@ -452,7 +452,7 @@ function GameRoom({roomId} : RoomId){
                                 event.preventDefault();
                                 stopTyping();
                                 sendMessage("SEND");
-                            }}} ref={textAreaRef} rows={1} cols={100} value={inputValue} onChange={(e) =>{setInputValue(e.target.value)}} placeholder='Enter Question'></textarea>
+                            }}} ref={textAreaRef} rows={1} cols={100} value={inputValue} onChange={(e) =>{handleInputChange(e.target.value)}} placeholder='Enter Question'></textarea>
                             <button onClick={()=> sendMessage("SEND")}>Send</button>
                         </div>
                         :
