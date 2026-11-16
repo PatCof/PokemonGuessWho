@@ -92,7 +92,7 @@ function GameRoom({roomId} : RoomId){
     const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isTyping = useRef(false);
 
-    const [turnCounter, setTurnCounter] = useState<number>(0);
+    const [turnCounter, setTurnCounter] = useState<number>(1);
 
     const handleInputChange = (value: string) => {
         setInputValue(value);
@@ -182,7 +182,7 @@ function GameRoom({roomId} : RoomId){
                         roomId: roomId,
                         index : msgCounter,
                         activePlayer : "GAME",
-                        msg : `----------------Turn ${turnCounter}----------------`
+                        msg : `----------------${currentPlayerTurn?.playerName} Turn ${turnCounter}----------------`
                     }
                     return message;
                 
@@ -199,6 +199,8 @@ function GameRoom({roomId} : RoomId){
             setMessages(messages => [...messages, newMsg]);
 
             socket.emit('chat_message', newMsg);
+
+            return socket.off('chat_message');
         }
     }
 
@@ -322,9 +324,14 @@ function GameRoom({roomId} : RoomId){
         openTurnPopup();
     }, [isTurnPopupOpen]);
 
-    useEffect(() =>{
-        sendMessage("GAME");
-    },[turnCounter]);
+
+    useEffect(() => {
+        console.log("COMPONENT MOUNTED");
+
+        return () => {
+            console.log("COMPONENT UNMOUNTED");
+        };
+    }, []);
 
     function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
         switch (action){

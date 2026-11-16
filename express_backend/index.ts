@@ -62,9 +62,6 @@ io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
     
     socket.on("join_room",(room)=>{
-        console.log("HELLO");
-        console.log(room.roomId);
-        socket.join(room.roomId);
         io.to(room.roomId).emit("joined_room", room);
     });
 
@@ -75,7 +72,18 @@ io.on("connection", (socket) => {
 
     socket.on("end_turn", (room)=>{
         const turnChangedRoom = endTurn(room);
+
+        if(!turnChangedRoom) return;
+
+        const currentPlayer = turnChangedRoom.players?.find(
+        player => player.turn
+    );
+
         io.to(room.roomId).emit("receive_turn_change", turnChangedRoom);
+        io.to(room.roomId).emit("receive_message", {
+        msg: `----------------${currentPlayer?.playerName} Turn ${turnChangedRoom.turnCounter}----------------`,
+        source: "GAME"
+    });
     });
 
     socket.on("final_answer", (pokemonData)=>{
