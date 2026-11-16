@@ -324,7 +324,6 @@ function GameRoom({roomId} : RoomId){
         openTurnPopup();
     }, [isTurnPopupOpen]);
 
-
     function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
         switch (action){
         case "INITIAL":
