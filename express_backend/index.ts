@@ -73,21 +73,19 @@ io.on("connection", (socket) => {
 
         io.to(pokemonData.room.roomId).emit("receive_pokemon",playerRoom);
 
-            // Check whether both players have selected
             const bothSelected = playerRoom.players?.every(
                 player => player.secretPokemon
             );
         
-            if (bothSelected && playerRoom.turnCounter === 0) {
-                playerRoom.turnCounter = 1;
-            
+            if (bothSelected && playerRoom.turnCounter === 1) {            
                 const currentPlayer = playerRoom.players?.find(
                     player => player.turn
                 );
 
-        io.to(pokemonData.room.roomId).emit("receive_message", {
-        msg: `----------------${currentPlayer?.playerName} Turn ${playerRoom.turnCounter}----------------`,
-        source: "GAME" })}});
+                io.to(pokemonData.room.roomId).emit("receive_message", {
+                msg: `----------------${currentPlayer?.playerName} Turn ${playerRoom.turnCounter}----------------`,
+                source: "GAME" })}
+    });
 
     socket.on("end_turn", (room)=>{
         const turnChangedRoom = endTurn(room);
