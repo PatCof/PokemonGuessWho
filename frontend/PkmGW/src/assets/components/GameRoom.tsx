@@ -325,14 +325,6 @@ function GameRoom({roomId} : RoomId){
     }, [isTurnPopupOpen]);
 
 
-    useEffect(() => {
-        console.log("COMPONENT MOUNTED");
-
-        return () => {
-            console.log("COMPONENT UNMOUNTED");
-        };
-    }, []);
-
     function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
         switch (action){
         case "INITIAL":

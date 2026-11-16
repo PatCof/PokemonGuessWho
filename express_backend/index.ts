@@ -62,6 +62,7 @@ io.on("connection", (socket) => {
     console.log("User connected:", socket.id);
     
     socket.on("join_room",(room)=>{
+        socket.join(room.roomId);
         io.to(room.roomId).emit("joined_room", room);
     });
 
@@ -82,8 +83,7 @@ io.on("connection", (socket) => {
         io.to(room.roomId).emit("receive_turn_change", turnChangedRoom);
         io.to(room.roomId).emit("receive_message", {
         msg: `----------------${currentPlayer?.playerName} Turn ${turnChangedRoom.turnCounter}----------------`,
-        source: "GAME"
-    });
+        source: "GAME" });
     });
 
     socket.on("final_answer", (pokemonData)=>{
