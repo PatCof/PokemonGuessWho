@@ -188,6 +188,10 @@ h2{
     margin: 0.5rem;
 }
 
+.game{
+    text-align: center;
+}
+
 .activePlayer{
     background-color:#3C91B9;
     margin-left: auto;

@@ -24,7 +24,8 @@ export interface Room {
     roomId : string,
     players ?: [Player, Player],
     currentPlayerId ?: string,
-    pokeList ?: Pokemon[]
+    pokeList ?: Pokemon[],
+    turnCounter : number
 }
 
 
@@ -35,6 +36,7 @@ export function setRoomId(){
         if(!roomMap.has(createdId)){
             let room = {
                 roomId : createdId,
+                turnCounter : 1
             }
             roomMap.set(createdId, room);
             break;
@@ -83,7 +85,8 @@ function createId(){
             roomId,
             players: [player1, player2],
             currentPlayerId: playerId,
-            pokeList: await generateRandomPokemon()
+            pokeList: await generateRandomPokemon(),
+            turnCounter : 1
         };
 
         roomMap.set(roomId, room);

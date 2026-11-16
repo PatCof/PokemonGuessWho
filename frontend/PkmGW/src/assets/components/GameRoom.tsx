@@ -8,7 +8,8 @@ import OutcomeModal from './OutcomeModal';
 import { useLocation, useNavigate } from "react-router";
 import { createSocket } from '../../socket';
 import { PulseLoader } from 'react-spinners';
-import { type KeyboardEvent } from 'react';
+import TurnPopup from './TurnPopup';
+
 interface Pokemon {
     id : number,
     name : string,
@@ -31,7 +32,8 @@ export interface Room {
     roomId : string,
     players ?: [Player, Player],
     pokeList ?: Pokemon[],
-    currentPlayerId ?: string
+    currentPlayerId ?: string,
+    turnCounter : number
 }
 
 interface Message {
@@ -49,6 +51,8 @@ function GameRoom({roomId} : RoomId){
     const [room, setRoom] = useState<Room>(currentRoom);    
     const [currentPlayer,setCurrentPlayer] = useState<string>("");
 
+    const currentPlayerTurn = room?.players?.find(player => player.turn);
+
     const [pokemon, setPokemon] = useState<Pokemon[] | null>(null);
     const [player1, setPlayer1] = useState<string>("");
     const [player2, setPlayer2] = useState<string>("");
@@ -56,6 +60,8 @@ function GameRoom({roomId} : RoomId){
     const [isSecretSelectionOpen, setIsSecretSelectionOpen] = useState<boolean>(true);
     const [isAnswerModalOpen, setIsAnswerModalOpen] = useState<boolean>(false);
     const [isOutcomeModalOpen, setIsOutcomeModalOpen] = useState<boolean>(false);
+    const [isTurnPopupOpen, setTurnPopupOpen] = useState<boolean>(false);
+
     const [finalPkmn, setFinalPkmn] = useState<Pokemon>();
     const [action, setAction] = useState<Action>("INITIAL");
     const [remaining, setRemaining] = useState<number>(24);
@@ -85,6 +91,8 @@ function GameRoom({roomId} : RoomId){
 
     const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isTyping = useRef(false);
+
+    const [turnCounter, setTurnCounter] = useState<number>(0);
 
     const handleInputChange = (value: string) => {
         setInputValue(value);
@@ -143,8 +151,10 @@ function GameRoom({roomId} : RoomId){
     };
 
     const endTurn = () =>{
+        setTurnCounter(turnCounter => turnCounter + 1);
         setAction("SELECTION");
         socket.emit("end_turn", room);
+        setTurnPopupOpen(true);
     };
 
     const sendPokemonFunc = (name : string, room : Room)=>{
@@ -166,22 +176,15 @@ function GameRoom({roomId} : RoomId){
                          activePlayer : activePlay,
                          msg : inputValue
                     }
-                break;
-                case "YES":
-                    return {
-                        roomId: roomId,
-                        index : msgCounter,
-                        activePlayer : activePlay,
-                        msg : "Yes"
-                    }
 
-                case "NO":
-                    return {
+                case "GAME":
+                    let message = { 
                         roomId: roomId,
                         index : msgCounter,
-                        activePlayer : activePlay,
-                        msg : "No"
+                        activePlayer : "GAME",
+                        msg : `----------------Turn ${turnCounter}----------------`
                     }
+                    return message;
                 
                 default:
                     throw new Error(`Invalid message source: ${source}`);
@@ -189,7 +192,7 @@ function GameRoom({roomId} : RoomId){
     }
 
     const sendMessage = (source: string) =>{
-        if((source === "SEND" && inputValue.trim() !== "") || source === "YES" || source === "NO"){
+        if((source === "SEND" && inputValue.trim() !== "") || source === "GAME"){
             let newMsg = generateMessage(source);
             setMsgCounter(msgCounter => msgCounter + 1);        
             setInputValue("");
@@ -198,6 +201,15 @@ function GameRoom({roomId} : RoomId){
             socket.emit('chat_message', newMsg);
         }
     }
+
+    const openTurnPopup = () => {
+        const timer = setTimeout(() => {
+            setTurnPopupOpen(false);
+        }, 2500);
+
+        return () => clearTimeout(timer);
+
+    };
 
 
     useEffect(()=>{
@@ -234,6 +246,7 @@ function GameRoom({roomId} : RoomId){
 
         socket.on("receive_turn_change", (room)=>{
             setRoom(room);
+            setTurnPopupOpen(true);
         });
 
         socket.on("receive_final", (data)=>{
@@ -274,6 +287,7 @@ function GameRoom({roomId} : RoomId){
     useEffect(()=>{
         setPokemon(room.pokeList!);
         setCurrentPlayer(room.currentPlayerId!);
+        setTurnCounter(room.turnCounter!);
     },[]);
 
     useEffect(()=>{
@@ -302,6 +316,15 @@ function GameRoom({roomId} : RoomId){
         anchorRef.current?.scrollIntoView({ behavior: "smooth" });
     },[messages]);
 
+    
+    useEffect(()=>{
+         if (!isTurnPopupOpen) return;
+        openTurnPopup();
+    }, [isTurnPopupOpen]);
+
+    useEffect(() =>{
+        sendMessage("GAME");
+    },[turnCounter]);
 
     function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
         switch (action){
@@ -318,7 +341,6 @@ function GameRoom({roomId} : RoomId){
 
 
         case "SELECTION":
-            // if(room!.players![0].turn === true){
                 if(toggledP1Cards.find(item => item === index)){
                     setToggledP1Cards(toggledP1Cards.filter(i => i !== index));
                     setRemaining(remaining => remaining + 1);
@@ -372,11 +394,9 @@ function GameRoom({roomId} : RoomId){
             {isOutcomeModalOpen && <OutcomeModal onClose={closeOutcomeModal} winner={winner}></OutcomeModal>}
             {isSecretSelectionOpen && <SecretSelectionModal onClose={closeSecretSelectionModal}></SecretSelectionModal>}
             {isAnswerModalOpen && <AnswerModal onSend={sendAnswer} onClose={closeAnswerModal} pkmn={finalPkmn}></AnswerModal>}
-            {/* <div className="text-div">
-                <div className="nav-bar">
-                    <a>Leave Match</a>
-                </div>
-            </div> */}
+            {isTurnPopupOpen && currentPlayerTurn && (
+                <TurnPopup playerName={currentPlayerTurn.playerName} />
+            )}
             { room && room.players && room.players.length >= 1 ?
             <div className={room.players![0].turn === true ? "player1-div vs-div" : "player2-div vs-div" }>
                 <div className={room.players![0].turn === true ? "player1 left-glow" : "player1"}>
@@ -431,7 +451,7 @@ function GameRoom({roomId} : RoomId){
                     <div className="message-div">
                         {messages && messages.length > 0 ?
                             messages.map((m, index) => 
-                            <div className={ m.activePlayer === currentPlayer ? "activePlayer msgs" : "otherPlayer msgs"} key={index}>
+                            <div className={ m.activePlayer === currentPlayer ? "activePlayer msgs" : m.activePlayer=== "GAME" ? "game msgs" : "otherPlayer msgs"} key={index}>
                                 {m.msg}
                             </div>     
                     )
