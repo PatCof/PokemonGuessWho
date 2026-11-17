@@ -1,0 +1,32 @@
+.backdrop-modal{
+    background-color: hsla(270, 3%, 25%, 0.381);
+    top:0;
+    left: 0;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 10;    
+}
+
+
+.info-modal{
+    background-color: aliceblue;
+    padding: 1rem;
+    width: 30rem;
+    text-align: center;
+}
+
+.info-title{
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+}
+
+.info-close-modal{
+    display: flex;
+    align-items: center;
+}

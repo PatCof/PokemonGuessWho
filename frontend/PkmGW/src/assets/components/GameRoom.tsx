@@ -238,6 +238,7 @@ function GameRoom({roomId} : RoomId){
         });
 
         socket.on("receive_message", (data)=>{
+            //sendMessage("GAME");
             setMessages((prevMessages) => [...prevMessages, data]);
         });
 

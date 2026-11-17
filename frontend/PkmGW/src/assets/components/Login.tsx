@@ -2,10 +2,12 @@ import "./../css/Login.css";
 import axios from "axios";
 import { redirect, useNavigate } from "react-router";
 import { useState } from "react";
+import InfoModal from "./InfoModal";
 
 function Login(){
     const [playerName , setPlayerName] = useState<string>("");
     const [roomIdValue , setRoomId] = useState<string>("");
+    const [isInfoModalOpen, setInfoModalOpen] = useState<boolean>(true);
 
     const navigate = useNavigate();
 
@@ -17,6 +19,7 @@ function Login(){
         setRoomId(event.target.value);
     }
 
+    const onClose = () => {setInfoModalOpen(false)};
 
     const createRoom =async() =>{
         if (playerName.trim() === "") return;
@@ -39,6 +42,7 @@ function Login(){
 
     return(
     <>
+        {isInfoModalOpen && <InfoModal onClose={onClose}></InfoModal>}
         <div className="main-page">
             <div className="outer-login">
                 <h1>Pokemon Guess Who</h1>
