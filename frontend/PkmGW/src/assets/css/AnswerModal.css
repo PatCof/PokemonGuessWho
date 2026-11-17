@@ -13,12 +13,12 @@
 }
 
 
-.modal{
+.selection-modal{
     background-color:#DBD3E3;  
     border-radius: 1rem;
-    width: 20rem;
+    width: 30rem;
     text-align: center;
-    padding: 2rem;
+    padding: 1rem;
 }
 
 .close-modal{
@@ -32,3 +32,22 @@
     width: 10rem;
     height: 10rem;
 }
+
+.game-result{
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.p1-div{
+    background-color: #4a76d0;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+
+.p2-div{
+    background-color: #cc0000;
+    padding: 1rem;
+    border-radius: 1rem;
+}
+ 

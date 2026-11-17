@@ -84,7 +84,9 @@ io.on("connection", (socket) => {
 
                 io.to(pokemonData.room.roomId).emit("receive_message", {
                 msg: `----------------${currentPlayer?.playerName} Turn ${playerRoom.turnCounter}----------------`,
-                source: "GAME" })}
+                source: "GAME",
+                activePlayer: "GAME" 
+            })}
     });
 
     socket.on("end_turn", (room)=>{

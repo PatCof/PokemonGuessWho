@@ -94,6 +94,9 @@ function GameRoom({roomId} : RoomId){
 
     const [turnCounter, setTurnCounter] = useState<number>(1);
 
+    const [p1Pokemon, setP1Pokemon] = useState<Pokemon>();
+    const [p2Pokemon, setP2Pokemon] = useState<Pokemon>();
+
     const handleInputChange = (value: string) => {
         setInputValue(value);
 
@@ -324,6 +327,13 @@ function GameRoom({roomId} : RoomId){
         openTurnPopup();
     }, [isTurnPopupOpen]);
 
+    useEffect(()=>{
+        if(room!.players![0].secretPokemon && room!.players![1].secretPokemon){
+            setP1Pokemon(pokemon!.find(p => p.name === room.players![0].secretPokemon));
+            setP2Pokemon(pokemon!.find(p => p.name === room.players![1].secretPokemon));
+        }
+    }, [room!.players![0].secretPokemon, room!.players![1].secretPokemon]);
+
     function selectPokemon(index:number, action: Action, name: string, room: Room, sprite: string, types: string[]){
         switch (action){
         case "INITIAL":
@@ -377,7 +387,7 @@ function GameRoom({roomId} : RoomId){
         ?
         <div>
             <div className="backdrop-modal">
-            <div className="modal">  
+            <div className="selection-modal">  
                 <div className="modal-text">
                     <h1>Waiting for Player 2:</h1>
                     <h2 className="modal-text-id">Your Room Id: </h2>
@@ -389,7 +399,7 @@ function GameRoom({roomId} : RoomId){
         </div>
         :
         <div className="main-game-room">
-            {isOutcomeModalOpen && <OutcomeModal onClose={closeOutcomeModal} winner={winner}></OutcomeModal>}
+            {isOutcomeModalOpen && <OutcomeModal finalPkmn={finalPkmn} room={room} p1Pokemon={p1Pokemon} p2Pokemon={p2Pokemon} onClose={closeOutcomeModal} winner={winner}></OutcomeModal>}
             {isSecretSelectionOpen && <SecretSelectionModal onClose={closeSecretSelectionModal}></SecretSelectionModal>}
             {isAnswerModalOpen && <AnswerModal onSend={sendAnswer} onClose={closeAnswerModal} pkmn={finalPkmn}></AnswerModal>}
             {isTurnPopupOpen && currentPlayerTurn && (
@@ -449,7 +459,7 @@ function GameRoom({roomId} : RoomId){
                     <div className="message-div">
                         {messages && messages.length > 0 ?
                             messages.map((m, index) => 
-                            <div className={ m.activePlayer === currentPlayer ? "activePlayer msgs" : m.activePlayer=== "GAME" ? "game msgs" : "otherPlayer msgs"} key={index}>
+                            <div className={ m.activePlayer === currentPlayer ? "activePlayer msgs" : m.activePlayer === "GAME" ? "game msgs" : "otherPlayer msgs"} key={index}>
                                 {m.msg}
                             </div>     
                     )
