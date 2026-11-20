@@ -11,6 +11,9 @@
   "dependencies": {
     "@react-router/node": "8.5.1",
     "@react-router/serve": "8.5.1",
+    "@tsparticles/engine": "^4.6.0",
+    "@tsparticles/particles": "^4.6.0",
+    "@tsparticles/react": "^4.6.0",
     "axios": "^1.20.0",
     "isbot": "^5.2.2",
     "react": "^19.3.1",

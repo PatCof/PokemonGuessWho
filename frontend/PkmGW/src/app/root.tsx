@@ -1,7 +1,7 @@
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import type { LinksFunction } from "react-router";
 import '../App.css';
-
+import ParticlesBg from "../assets/components/ParticlesBg";
 export const links: LinksFunction = () => [
   { rel: "icon", type: "image/svg+xml", href: "/greatball.svg" },
 ];
@@ -18,6 +18,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </head>
       <body>
         {children}
+        <ParticlesBg />
         <ScrollRestoration />
         <Scripts />
       </body>

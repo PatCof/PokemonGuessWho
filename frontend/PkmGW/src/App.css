@@ -1,17 +1,23 @@
 :root{
     height: 100%;
     width: 100%;   
-    background: radial-gradient(
+    /* background: radial-gradient(
         circle at 60%,
         #1b1d1d 25%,
         #38302f 50%,
         #3c3b3b 75%
-    );
+    ); */
+
+    background-color: #161925;
 
     display:flex;
     justify-content: center;
     align-items: center;  
     font-size: 16px;  
+}
+
+.tsparticles{
+    z-index: 0;
 }
 
 @font-face {
@@ -24,12 +30,14 @@
 :root{
     height: 100%;
     width: 100%;   
-    background: radial-gradient(
+    /* background: radial-gradient(
         circle at 60%,
         #1b1d1d 25%,
         #38302f 50%,
         #3c3b3b 75%
-    );
+    ); */
+    background-color: #161925;
+
 
     display:flex;
     justify-content: center;
@@ -42,12 +50,14 @@
 :root{
     height: 100%;
     width: 100%;   
-    background: radial-gradient(
+    /* background: radial-gradient(
         circle at 60%,
         #1b1d1d 25%,
         #38302f 50%,
         #3c3b3b 75%
-    );
+    ); */
+
+    background-color: #161925;
 
     display:flex;
     justify-content: center;
