@@ -185,7 +185,7 @@ function GameRoom({roomId} : RoomId){
                         roomId: roomId,
                         index : msgCounter,
                         activePlayer : "GAME",
-                        msg : `----------------${currentPlayerTurn?.playerName} Turn ${turnCounter}----------------`
+                        msg : `${currentPlayerTurn?.playerName} Turn ${turnCounter}`
                     }
                     return message;
                 
