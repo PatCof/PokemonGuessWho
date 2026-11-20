@@ -190,6 +190,7 @@ h2{
 }
 
 .game{
+    width: 100%;
     text-align: center;
     max-width: 100%;
 }
@@ -244,7 +245,13 @@ textarea{
 }
 
 
-@media (min-width: 600px) and (max-width: 767px){
+
+/* 600 - 767 Small Phone */
+
+
+
+
+@media (min-width: 481px) and (max-width: 768px){
    .main-game-room{
     display: flex;
     flex-direction: column;  
@@ -408,7 +415,7 @@ h2{
 
 .message-div{
     height: 65%;
-    width: fit-content;
+    width: 95%;
     background-color: #CEE0E9;
     overflow-y: scroll;
     -ms-overflow-style: none;
@@ -432,6 +439,7 @@ h2{
 }
 
 .game{
+    width: 100%;
     text-align: center;
     max-width: 100%;
 }
@@ -453,6 +461,503 @@ h2{
 button{
     border-radius: 1rem;
     font-size: 8px;
+}
+
+textarea{
+    height: 1rem;
+    border-radius: 0.5rem;
+    width: 15rem;
+    resize: none;
+    overflow-y: hidden;
+}
+
+
+.left-glow{
+    box-shadow: inset 3px -3px 2px rgb(255, 213, 0);
+}
+
+.right-glow{
+    box-shadow: inset -3px 3px 2px rgb(255, 213, 0);
+}
+
+.modal-text-id{
+    user-select: none;
+}
+
+.typing{
+    height:2rem;
+}
+
+.sprite{
+    width: 1rem;
+    height:1rem;
+    transform: scale(5,5);
+}
+}
+
+
+
+
+/* 768 - 991 Tablets */
+
+
+
+
+@media (min-width: 769px) and (max-width: 1023px){
+   .main-game-room{
+    display: flex;
+    flex-direction: column;  
+    flex: 1;
+    width:100vw;
+    height: 100vh;
+}
+
+.text-div{
+    margin: 0.5rem 0.5rem 1rem 0.5rem;
+    background-color: rgb(175, 143, 211);
+    border-radius: 1rem;
+}
+
+.nav-bar{
+    display:flex;
+    height: 2rem;
+    padding-left:  1rem;
+    align-items: center;
+}
+
+.player1-div{
+    display:flex;
+    border-radius: 1rem;
+    font-size: 12px;
+}
+
+.player2-div{
+    display:flex;
+    border-radius: 1rem;
+    font-size: 12px;
+}
+
+.vs-div{
+    background: linear-gradient( 135deg, #4a76d0 50%, #cc0000 50%);
+    height: 2rem;
+    text-align: center;
+}
+
+.player1{
+    border-radius: 1rem 0rem 0rem 1rem;
+    background-color: #4a76d0;
+    flex-grow: 1;
+    text-align: center;
+    align-items: start;
+    justify-content: start;
+    font-size: 6px;
+}
+
+.player2{
+    border-radius: 0rem 1rem 1rem 0rem;
+    background-color: #cc0000;
+    flex-grow: 1;
+    text-align: center;
+    align-items: end;
+    justify-content: end;
+    font-size: 6px;
+}
+
+.info-div{
+    display:flex;
+}
+
+.remaining-pkmn-div{
+    background-color: 	#3C91B9;
+    margin: 0.25rem;
+    display: flex;
+    border-radius: 1rem;  
+    text-align: center;
+    margin-left: auto;
+    width: 3rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+}
+
+.chosen-pkmn-div{
+    background-color: 	#3C3E67;
+    margin: 0.1rem;
+    border-radius: 1rem;
+    display: flex;
+    flex: 10;
+    font-size: 12px; 
+}
+
+.chosen-pkmn-text{
+    color: #D4D5E2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    font-size: 10px;
+
+}
+
+.game-components-div{
+    display:flex;
+    flex-direction: row;
+    margin: 0.25rem;
+    height: 90%;
+    width: 84%;
+    border-radius: 1rem;
+    gap: 1rem;
+}
+
+.game-chat-div{
+    width: 30%;
+    background-color: #3E3A5F;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 87%;
+    margin-top: 1rem;
+}
+
+.board-div{
+    margin:0.25rem;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+}
+
+.game-board{
+    height: 80%;
+    width: 80%;
+    background-color: #7973B0;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0px 5px 0px 0px #4E497E,
+                inset -5px 0px 0px 0px  #4E497E;
+}
+
+.buttons-div{
+    margin: 3rem 0rem 0rem 0rem ;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+h2{
+    padding-left: 1rem;
+}
+
+.message-history{
+    text-align: center;
+    color: #D4D5E2;
+    font-size: 8px;
+}
+
+.message-input{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.message-div{
+    height: 80%;
+    width: 95%;
+    background-color: #CEE0E9;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 0.25rem;
+}
+
+.message-div::-webkit-scrollbar {
+    display: none;
+}
+
+.msgs{
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    overflow-wrap:break-word;
+    word-break: break-all;
+    display: block;
+    width: fit-content;
+    margin: 0.5rem;
+    font-size: 10px;
+}
+
+.game{
+    width: 80%;
+    text-align: center;
+    max-width: 100%;
+}
+
+.activePlayer{
+    background-color:#3C91B9;
+    margin-left: auto;
+}
+
+.otherPlayer{
+    background-color:#B7B9D1;
+    margin-right: auto;
+}
+
+.whitespace{
+    padding: 10px;
+}
+
+button{
+    border-radius: 1rem;
+    font-size: 10px;
+}
+
+textarea{
+    height: 1rem;
+    border-radius: 0.5rem;
+    width: 15rem;
+    resize: none;
+    overflow-y: hidden;
+}
+
+
+.left-glow{
+    box-shadow: inset 3px -3px 2px rgb(255, 213, 0);
+}
+
+.right-glow{
+    box-shadow: inset -3px 3px 2px rgb(255, 213, 0);
+}
+
+.modal-text-id{
+    user-select: none;
+}
+
+.typing{
+    height:2rem;
+}
+
+.sprite{
+    width: 1rem;
+    height:1rem;
+    transform: scale(5,5);
+}
+}
+
+
+
+
+
+
+/* LAPTOPS  AND BEYOND */
+
+
+@media (min-width: 1024px) and (max-width: 1201px){
+   .main-game-room{
+    display: flex;
+    flex-direction: column;  
+    flex: 1;
+    width:100vw;
+    height: 100vh;
+}
+
+.text-div{
+    margin: 0.5rem 0.5rem 1rem 0.5rem;
+    background-color: rgb(175, 143, 211);
+    border-radius: 1rem;
+}
+
+.nav-bar{
+    display:flex;
+    height: 2rem;
+    padding-left:  1rem;
+    align-items: center;
+}
+
+.player1-div{
+    display:flex;
+    border-radius: 1rem;
+    font-size: 12px;
+}
+
+.player2-div{
+    display:flex;
+    border-radius: 1rem;
+    font-size: 12px;
+}
+
+.vs-div{
+    background: linear-gradient( 135deg, #4a76d0 50%, #cc0000 50%);
+    height: 2rem;
+    text-align: center;
+    margin-top: 1rem;
+}
+
+.player1{
+    border-radius: 1rem 0rem 0rem 1rem;
+    background-color: #4a76d0;
+    flex-grow: 1;
+    text-align: center;
+    align-items: start;
+    justify-content: start;
+    font-size: 6px;
+}
+
+.player2{
+    border-radius: 0rem 1rem 1rem 0rem;
+    background-color: #cc0000;
+    flex-grow: 1;
+    text-align: center;
+    align-items: end;
+    justify-content: end;
+    font-size: 6px;
+}
+
+.info-div{
+    display:flex;
+}
+
+.remaining-pkmn-div{
+    background-color: 	#3C91B9;
+    margin: 0.25rem;
+    display: flex;
+    border-radius: 1rem;  
+    text-align: center;
+    margin-left: auto;
+    width: 3rem;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+}
+
+.chosen-pkmn-div{
+    background-color: 	#3C3E67;
+    margin: 0.1rem;
+    border-radius: 1rem;
+    display: flex;
+    flex: 10;
+    font-size: 14px; 
+}
+
+.chosen-pkmn-text{
+    color: #D4D5E2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+    font-size: 14px;
+
+}
+
+.game-components-div{
+    display:flex;
+    flex-direction: row;
+    margin: 0.25rem;
+    height: 90%;
+    width: 84%;
+    border-radius: 1rem;
+    gap: 1rem;
+}
+
+.game-chat-div{
+    width: 30%;
+    background-color: #3E3A5F;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 93%;
+    margin-top: 1rem;
+}
+
+.board-div{
+    margin:0.25rem;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+}
+
+.game-board{
+    height: 86%;
+    width: 80%;
+    background-color: #7973B0;
+    border-radius: 1rem;
+    padding: 1rem;
+    margin-top: 1rem;
+    box-shadow: 0px 5px 0px 0px #4E497E,
+                inset -5px 0px 0px 0px  #4E497E;
+}
+
+.buttons-div{
+    margin: 1.5rem 0rem 0rem 0rem ;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+h2{
+    padding-left: 1rem;
+}
+
+.message-history{
+    text-align: center;
+    color: #D4D5E2;
+    font-size: 8px;
+}
+
+.message-input{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.message-div{
+    height: 80%;
+    width: 95%;
+    background-color: #CEE0E9;
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+    padding: 0.25rem;
+}
+
+.message-div::-webkit-scrollbar {
+    display: none;
+}
+
+.msgs{
+    border-radius: 0.5rem;
+    padding: 0.5rem;
+    overflow-wrap:break-word;
+    word-break: break-all;
+    display: block;
+    width: fit-content;
+    margin: 0.5rem;
+    font-size: 10px;
+}
+
+.game{
+    width: 80%;
+    text-align: center;
+    max-width: 100%;
+}
+
+.activePlayer{
+    background-color:#3C91B9;
+    margin-left: auto;
+}
+
+.otherPlayer{
+    background-color:#B7B9D1;
+    margin-right: auto;
+}
+
+.whitespace{
+    padding: 10px;
+}
+
+button{
+    border-radius: 1rem;
+    font-size: 10px;
 }
 
 textarea{

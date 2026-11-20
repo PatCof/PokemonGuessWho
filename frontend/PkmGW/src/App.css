@@ -37,3 +37,21 @@
     font-size: 14px;  
 } 
 }
+
+@media (min-width: 768px) and (max-width: 991px){
+:root{
+    height: 100%;
+    width: 100%;   
+    background: radial-gradient(
+        circle at 60%,
+        #1b1d1d 25%,
+        #38302f 50%,
+        #3c3b3b 75%
+    );
+
+    display:flex;
+    justify-content: center;
+    align-items: center;  
+    font-size: 16px;  
+} 
+}

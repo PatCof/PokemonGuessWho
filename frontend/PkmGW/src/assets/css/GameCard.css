@@ -62,6 +62,7 @@
     border-color: #666;
     padding: 0.25rem;
     border-radius: 0.5rem;
+    font-size: 12px;
 }
 
 .type-div{
@@ -77,7 +78,7 @@ img{
     height: 4rem;
 }
 
-@media (min-width: 600px) and (max-width: 767px){
+@media (min-width: 481px) and (max-width: 768px){
     .cards{
     width: 3rem;
     height: 3rem;
@@ -142,6 +143,7 @@ img{
         border-color: #666;
         padding: 0.25rem;
         border-radius: 0.5rem;
+        font-size: 6px;
     }
 
     .type-div{
@@ -158,3 +160,174 @@ img{
     }
 
 }
+
+
+/* TABLETS*/
+
+@media (min-width: 769px) and (max-width: 1023px){
+    .cards{
+    width: 4.5rem;
+    height: 4rem;
+    border-radius: 0.25rem;
+    user-select: none;
+    cursor: pointer;
+    font-size: 8px;
+    }
+
+    .selected-main-card{
+        background-color: #D4D5E2;
+        box-shadow: 0px 5px 0px 0px #2D2E43;
+        transition: all 0.2s ease-in;
+    }
+
+
+    .selected-main-card:active{
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+    }
+
+    .deselected-main-card{
+        background-color: #737271;
+        transition: all 0.2s ease-out;
+        box-shadow: inset -3px -3px 5px 0px rgb(48, 43, 35, 0.7);
+        transform: translateY(4px);
+        filter: grayscale(100%);
+    }
+
+    .deselected-main-card:active{
+        transform: translateY(4px);    
+    }
+
+    .selected-pkmn-name{
+        background-color: #9395BE;
+        border-radius: 0.25rem 0.25rem 0rem 0rem;
+        margin:0rem;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .deselected-pkmn-name{
+        background-color: #313434;
+        color: #737271;
+        border-radius: 0.25rem 0.25rem 0rem 0rem;
+        margin:0rem;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+    }
+
+
+    .inner-card{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .type-cards{
+        border-color: #666;
+        padding: 0.25rem;
+        border-radius: 0.5rem;
+        font-size: 8px;
+    }
+
+    .type-div{
+        display: flex;
+        flex-direction: row;
+    }
+
+    img{
+        -webkit-user-drag: none;
+        user-select: none;
+        width: 2rem;
+        height: 2rem;
+    }
+
+}
+
+/* LAPTOPS AND BEYOND */
+
+@media (min-width: 1024px) and (max-width: 1201px){
+    .cards{
+    width: 6rem;
+    height: 5rem;
+    border-radius: 0.25rem;
+    user-select: none;
+    cursor: pointer;
+    font-size: 10px;
+    }
+
+    .selected-main-card{
+        background-color: #D4D5E2;
+        box-shadow: 0px 5px 0px 0px #2D2E43;
+        transition: all 0.2s ease-in;
+    }
+
+
+    .selected-main-card:active{
+    box-shadow: 0 5px #666;
+    transform: translateY(4px);
+    }
+
+    .deselected-main-card{
+        background-color: #737271;
+        transition: all 0.2s ease-out;
+        box-shadow: inset -3px -3px 5px 0px rgb(48, 43, 35, 0.7);
+        transform: translateY(4px);
+        filter: grayscale(100%);
+    }
+
+    .deselected-main-card:active{
+        transform: translateY(4px);    
+    }
+
+    .selected-pkmn-name{
+        background-color: #9395BE;
+        border-radius: 0.25rem 0.25rem 0rem 0rem;
+        margin:0rem;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+    }
+
+    .deselected-pkmn-name{
+        background-color: #313434;
+        color: #737271;
+        border-radius: 0.25rem 0.25rem 0rem 0rem;
+        margin:0rem;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+    }
+
+
+    .inner-card{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .type-cards{
+        border-color: #666;
+        padding: 0.25rem;
+        border-radius: 0.5rem;
+        font-size: 10px;
+    }
+
+    .type-div{
+        display: flex;
+        flex-direction: row;
+
+    }
+
+    img{
+        -webkit-user-drag: none;
+        user-select: none;
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+
+}
+
