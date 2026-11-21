@@ -1,19 +1,18 @@
 .main-page{
-    background-color: #f7ce3b;
+    background-color: rgb(192, 205, 216);
     text-align: center;
-    width: 30rem;
-    height: 18rem;
+    width: 38rem;
+    height: fit-content;
     border-radius: 2rem;
-    box-shadow: inset -3px -3px 5px 5px #886E11;
-    corner-shape: bevel square bevel square;
+    /* box-shadow: inset -3px -3px 5px 5px #886E11;
+    corner-shape: bevel square bevel square; */
+    box-shadow: 5px 5px 15px 5px rgba(0,0,0,0.5);
 }
 
 .outer-login{
     display:flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
-    margin: 1rem;
-    padding: 1rem;
 }
 
 .inner-login{
@@ -56,7 +55,26 @@
 .name-input{
     width: 20rem;
 }
+
 button{
     border-radius: 1rem;
 }
 
+.image{
+    width:12rem;
+    height: auto;
+    border-radius: 2rem 0rem 0rem 2rem;
+}
+
+.login-side{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+
+.title-text{
+    font-family: "PokeFont";
+}

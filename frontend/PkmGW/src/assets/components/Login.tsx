@@ -3,7 +3,7 @@ import axios from "axios";
 import { redirect, useNavigate } from "react-router";
 import { useState } from "react";
 import InfoModal from "./InfoModal";
-
+import sideImage from "../images/01.png";
 function Login(){
     const [playerName , setPlayerName] = useState<string>("");
     const [roomIdValue , setRoomId] = useState<string>("");
@@ -43,7 +43,7 @@ function Login(){
     return(
     <>
         {isInfoModalOpen && <InfoModal onClose={onClose}></InfoModal>}
-        <div className="main-page">
+        {/* <div className="main-page">
             <div className="outer-login">
                 <h1>Pokemon Guess Who</h1>
                 <input className="name-input" type="text" placeholder="Enter Display Name" value={playerName} onChange={handleChange}></input>
@@ -61,6 +61,31 @@ function Login(){
                         </div>
                     </div>
                 </div>
+            </div>
+        </div> */}
+        <div className="main-page">
+            <div className="outer-login">
+            <div className="side-image">
+                <img className="image" src={sideImage}></img>
+            </div>
+            <div className="login-side">
+                <h1 className="title-text">Pokemon Guess Who</h1>
+                <input className="name-input" type="text" placeholder="Enter Display Name" value={playerName} onChange={handleChange}></input>
+                <div className="inner-login">
+                    <div className="room-creation">
+                        <h2>Create a Room</h2>
+                        <button onClick={createRoom}>Create</button>
+                    </div>
+                    <div className="vertical-bar"></div>
+                    <div className="join-room">
+                        <h2>Join Room</h2>
+                        <div className="inner-join-room">
+                            <input className="join-room-input" type="text" placeholder="Enter Room ID" value={roomIdValue} onChange={handleRoomChange}></input>
+                            <button className="join-room-button" onClick={joinRoom}>Join</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
     </>
