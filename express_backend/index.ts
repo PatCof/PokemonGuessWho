@@ -77,13 +77,13 @@ io.on("connection", (socket) => {
                 player => player.secretPokemon
             );
         
-            if (bothSelected && playerRoom.turnCounter === 1) {            
+            if (bothSelected && playerRoom.turnCounter === 0) {            
                 const currentPlayer = playerRoom.players?.find(
                     player => player.turn
                 );
 
                 io.to(pokemonData.room.roomId).emit("receive_message", {
-                msg: `${currentPlayer?.playerName} Turn ${playerRoom.turnCounter}`,
+                msg: `${currentPlayer?.playerName} Turn 1`,
                 source: "GAME",
                 activePlayer: "GAME" 
             })}

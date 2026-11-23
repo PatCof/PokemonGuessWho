@@ -36,7 +36,7 @@ export function setRoomId(){
         if(!roomMap.has(createdId)){
             let room = {
                 roomId : createdId,
-                turnCounter : 1
+                turnCounter : 0
             }
             roomMap.set(createdId, room);
             break;
@@ -86,7 +86,7 @@ function createId(){
             players: [player1, player2],
             currentPlayerId: playerId,
             pokeList: await generateRandomPokemon(),
-            turnCounter : 1
+            turnCounter : 0
         };
 
         roomMap.set(roomId, room);

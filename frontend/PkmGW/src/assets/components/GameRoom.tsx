@@ -92,8 +92,6 @@ function GameRoom({roomId} : RoomId){
     const typingTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isTyping = useRef(false);
 
-    const [turnCounter, setTurnCounter] = useState<number>(1);
-
     const [p1Pokemon, setP1Pokemon] = useState<Pokemon>();
     const [p2Pokemon, setP2Pokemon] = useState<Pokemon>();
 
@@ -154,9 +152,7 @@ function GameRoom({roomId} : RoomId){
     };
 
     const endTurn = () =>{
-        setTurnCounter(turnCounter => turnCounter + 1);
         setAction("SELECTION");
-        room.turnCounter = turnCounter;
         socket.emit("end_turn", room);
         setTurnPopupOpen(true);
     };
@@ -181,14 +177,14 @@ function GameRoom({roomId} : RoomId){
                          msg : inputValue
                     }
 
-                case "GAME":
-                    let message = { 
-                        roomId: roomId,
-                        index : msgCounter,
-                        activePlayer : "GAME",
-                        msg : `${currentPlayerTurn?.playerName} Turn ${turnCounter}`
-                    }
-                    return message;
+                //case "GAME":
+                    // let message = { 
+                    //     roomId: roomId,
+                    //     index : msgCounter,
+                    //     activePlayer : "GAME",
+                    //     msg : `${currentPlayerTurn?.playerName} Turn ${turnCounter}`
+                    // }
+                    // return message;
                 
                 default:
                     throw new Error(`Invalid message source: ${source}`);
@@ -294,7 +290,6 @@ function GameRoom({roomId} : RoomId){
     useEffect(()=>{
         setPokemon(room.pokeList!);
         setCurrentPlayer(room.currentPlayerId!);
-        setTurnCounter(room.turnCounter!);
     },[]);
 
     useEffect(()=>{
