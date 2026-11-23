@@ -77,7 +77,7 @@ io.on("connection", (socket) => {
                 player => player.secretPokemon
             );
         
-            if (bothSelected && playerRoom.turnCounter === 0) {            
+            if (bothSelected && playerRoom.turnCounter === 1) {            
                 const currentPlayer = playerRoom.players?.find(
                     player => player.turn
                 );
