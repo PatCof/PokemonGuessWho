@@ -154,13 +154,12 @@ export function setTurns(room : Room){
         players[0].turn = false;
         players[1].turn = true;
         room!.currentPlayerId = players[1].playerId;
-        console.log("Player2 Turn");   
     }else{
         players[1].action = "SELECTION";
         players[0].turn = true;
         players[1].turn = false;
         room!.currentPlayerId = players[0].playerId;
-        console.log("Player1 Turn");
+        room!.turnCounter += 1;
     }
     return room;
 }

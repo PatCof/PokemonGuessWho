@@ -156,6 +156,7 @@ function GameRoom({roomId} : RoomId){
     const endTurn = () =>{
         setTurnCounter(turnCounter => turnCounter + 1);
         setAction("SELECTION");
+        room.turnCounter = turnCounter;
         socket.emit("end_turn", room);
         setTurnPopupOpen(true);
     };
@@ -390,7 +391,7 @@ function GameRoom({roomId} : RoomId){
             <div className="backdrop-modal">
             <div className="selection-modal">  
                 <div className="modal-text">
-                    <h1>Waiting for Player 2:</h1>
+                    <h1 className="waiting-text">Waiting for Player 2:</h1>
                     <h2 className="modal-text-id">Your Room Id: </h2>
                     <h2>{roomId}</h2>
                     <PulseLoader></PulseLoader>

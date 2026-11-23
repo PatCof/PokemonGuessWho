@@ -244,6 +244,9 @@ textarea{
     transform: scale(5,5);
 }
 
+.waiting-text{
+    user-select: none;
+}
 
 
 /* 600 - 767 Small Phone */

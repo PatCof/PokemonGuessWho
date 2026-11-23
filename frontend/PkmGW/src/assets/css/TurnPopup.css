@@ -1,0 +1,9 @@
+.turn-modal{
+    background-color:#528bd5;
+    box-shadow: 0px 5px 0px 0px #4a6aa4,
+        inset -5px 0px 0px 0px  #4a6aa4; 
+    border-radius: 1rem;
+    width: 20rem;
+    text-align: center;
+    padding: 2rem;
+}

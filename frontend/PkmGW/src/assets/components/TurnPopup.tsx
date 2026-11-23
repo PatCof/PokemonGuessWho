@@ -8,7 +8,7 @@ function TurnPopup({playerName} : props){
     return(
         <>
         <div className="backdrop-modal">
-            <div className="modal">
+            <div className="turn-modal">
                 <div className="modal-text">
                     <h2>
                         {playerName}'s Turn
