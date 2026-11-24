@@ -207,11 +207,12 @@ function GameRoom({roomId} : RoomId){
     const openTurnPopup = () => {
         const timer = setTimeout(() => {
             setTurnPopupOpen(false);
-        }, 2500);
+        }, 2000);
 
         return () => clearTimeout(timer);
 
     };
+
 
 
     useEffect(()=>{
@@ -396,7 +397,7 @@ function GameRoom({roomId} : RoomId){
         </div>
         :
         <div className="main-game-room">
-            {isOutcomeModalOpen && <OutcomeModal finalPkmn={finalPkmn} room={room} p1Pokemon={p1Pokemon} p2Pokemon={p2Pokemon} onClose={closeOutcomeModal} winner={winner}></OutcomeModal>}
+            {isOutcomeModalOpen && <OutcomeModal finalPkmn={finalPkmn} room={room} p1Pokemon={p1Pokemon} p2Pokemon={p2Pokemon} onClose={closeOutcomeModal} winner={winner} currentPlayer={currentPlayer}></OutcomeModal>}
             {isSecretSelectionOpen && <SecretSelectionModal onClose={closeSecretSelectionModal}></SecretSelectionModal>}
             {isAnswerModalOpen && <AnswerModal onSend={sendAnswer} onClose={closeAnswerModal} pkmn={finalPkmn}></AnswerModal>}
             {isTurnPopupOpen && currentPlayerTurn && (

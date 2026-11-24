@@ -30,8 +30,10 @@ interface props {
     finalPkmn ?: Pokemon,
     p1Pokemon ?: Pokemon,
     p2Pokemon ?: Pokemon,
-    room: Room
+    room: Room,
+    currentPlayer: string
 }
+
 
 function OutcomeModal({finalPkmn, winner, onClose, p1Pokemon, p2Pokemon, room} : props){
     return(
@@ -47,12 +49,12 @@ function OutcomeModal({finalPkmn, winner, onClose, p1Pokemon, p2Pokemon, room} :
                         </h1>
                         <div className="game-result">
                             <div className="p1-div">
-                                <h2>{room.players![0].playerName} chose: </h2>
+                                <h2>{room.players![0].playerName} Secret Pokemon: </h2>
                                 <img className="img-sprite" src={p1Pokemon?.sprite}></img>
                                 <h3>{p1Pokemon?.name}</h3>
                             </div>
                             <div className="p2-div">
-                                <h2>{room.players![1].playerName} chose: </h2>
+                                <h2>{room.players![1].playerName} Secret Pokemon: </h2>
                                 <img className="img-sprite" src={p2Pokemon?.sprite}></img>
                                 <h3>{p2Pokemon?.name}</h3>
                             </div>
