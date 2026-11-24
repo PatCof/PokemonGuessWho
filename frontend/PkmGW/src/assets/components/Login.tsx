@@ -38,7 +38,7 @@ function Login(){
                 return;
         }
         setIsButtonDisabled(true);
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/createRoom`, {playerName : playerName});
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/createRoom`, {playerName : playerName.trim()});
         const roomId:string = response.data.roomId;
         navigate(`/Game/${roomId}`, {state: {room: response.data}});
     }
@@ -59,7 +59,7 @@ function Login(){
             return;
         }
         setIsButtonDisabled(true);
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/joinRoom`, {roomId: roomIdValue, playerName: playerName});
+        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/joinRoom`, {roomId: roomIdValue.trim(), playerName: playerName.trim()});
         if(response.data !== undefined && response.data){
             navigate(`/Game/${roomIdValue}`, {state: {room: response.data}});
         }
